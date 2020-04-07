@@ -1,0 +1,3 @@
+sudo ethercat download 0x6040 0 0x0006
+sudo ethercat download 0x6040 0 0x0007
+sudo ethercat download 0x6040 0 0x000f
