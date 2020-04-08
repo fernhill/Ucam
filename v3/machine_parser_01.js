@@ -1,4 +1,4 @@
-/*Gcode patch with G10, G16 & G17*/
+/*Plain Vanilla code without any modification*/
 var fs = require('fs');
 var home_path = "/home/pi/v3";
 var path = home_path+"/machine_code";
@@ -271,14 +271,8 @@ var obj = {
                 xdeg=xval/pval;
                 xcommand= "A"+xdeg;
                 console.log("Will update the Commands by adding "+Math.abs(pval) +"values of " +xcommand);
-		var j = 0;
-		parsed_lines2[j]="G167S";
-              for(j=1;j <=Math.abs(pval);j++){
-                parsed_lines2[j]=xcommand;
-		
-		}
-		parsed_lines2[j]="P0";
-
+              for(var j=0;j <Math.abs(pval);j++){
+                parsed_lines2[j]=xcommand;}
                 this.parsed_lines.splice.apply(this.parsed_lines, [i,3].concat(parsed_lines2));
                 n=this.parsed_lines.length;
                 }
