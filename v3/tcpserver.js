@@ -1,4 +1,7 @@
-/*Gcode patch with G10, G16 & G17*/
+/*Version = 1.1.0
+Description= Pot Not Hard limit working
+Pot Not Soft limit working
+*/
 net = require('net');
 //var sleep = require('sleep');
 var server = require("net").createServer();
@@ -35,11 +38,15 @@ var ui_clients = [];
 PREVIOUS_COMMAND_EXEC_TS = 0;
 var ETHERCAT_STATUS = 0;
 
+var posi;
+
 net.createServer(function (socket) {
   // Identify this client
   // Start a TCP Server
+  if(mp.alarm === null ){
   updateClients('ETH_UP', "Ethercat communication up...");
   ETHERCAT_STATUS = 1;
+  }
   socket.name = socket.remoteAddress + ":" + socket.remotePort
   // Put this new client in the list
   clients.push(socket);
@@ -168,7 +175,6 @@ var init_drive_settings = function(){
 }
 sock.movement = false;
 sock.on('message', function(message){
-//fs.appendFileSync('./console.log', 'start-message');
   var m = message.toString();
   if(m == "TARGET"){
   	console.log("DBG:: Target Reached");
@@ -176,34 +182,28 @@ sock.on('message', function(message){
   }
             ////console.log("Message : ", m);
   if(m == "REFCOM"){
-	//fs.appendFileSync('./console.log', 'REFCOM');
     //console.log("-------REFERENCE COMPLETED-----");
     updateClients("ref_complete",{'ref':'complete'});
   }
   if(m == "TARGET" && SINGLE_BLOCK == 0 && mp.ecs == 0){
-	//fs.appendFileSync('./console.log', 'TARGET2');
     ////console.log("Reached target. Will execute next line");
     UNDER_MOVEMENT=false;
     execute_line();
   }
   if(m == "TARGET" && mp.ecs == 1){
-	//fs.appendFileSync('./console.log', 'TARGET1');
 	  console.log("DBG:: Undermovement is false since ECS is enabled");
 	  UNDER_MOVEMENT=false;
   }
   else if (m.indexOf("ALARM") >=0) {
-	//fs.appendFileSync('./console.log', 'ALARM1');
     ////console.log("This is alarm");
 	// console.log("--Alarm Status --");
 	// console.log(m);
 	if(m[9] == 0 && UNDER_MOVEMENT === false){
 		PULSE_STATUS = 0;
 	}
-	var l1 = "\n M[9] --> "+m[9]+", Error -> "+ERROR+", UNDER_MOVEMENT -> "+UNDER_MOVEMENT+", MP.ECS -> "+mp.ecs+", PULSE_STATUS -> "+PULSE_STATUS + "\n";
-	//fs.appendFileSync('./console.log', l1);
+	//console.log("M[9] --> "+m[9]+", Error -> "+ERROR+", UNDER_MOVEMENT -> "+UNDER_MOVEMENT+", MP.ECS -> "+mp.ecs+", PULSE_STATUS -> "+PULSE_STATUS);
     if(m[9] == 1 && ERROR == 0 && UNDER_MOVEMENT === false && mp.ecs == 1 && PULSE_STATUS == 0){
-	  console.log("WILL EXECUTE LINE");
-	  //fs.appendFileSync('./console.log', "inside if \n");
+      console.log("WILL EXECUTE LINE");
 	  console.log("DBG:: Setting True, since All conditions met");
 	  UNDER_MOVEMENT = true;
 	  execute_line();
@@ -211,7 +211,6 @@ sock.on('message', function(message){
     updateClients("alarms",m);
   }
   else if (m.indexOf("OUTPUT") >=0) {
-	//fs.appendFileSync('./console.log', 'OUTPUT1');
     ////console.log("This is OUTPUT");
     ////console.log(m);
     //updateClients("alarms",m);
@@ -231,7 +230,6 @@ sock.on('message', function(message){
   }*/
   else if(m.indexOf("ERROR ")>=0)
   {
-//fs.appendFileSync('./console.log', 'ERROR1');
 	//console.log("DBG:: Setting False due to Error.. Error is ->"+m);
     alarmnumber=parseInt(m.substr(m.indexOf(" "),m.length));
     if(alarmnumber>0)
@@ -243,13 +241,13 @@ sock.on('message', function(message){
       UNDER_MOVEMENT = false;
       ERROR = 1;
     }else{
+		if(mp.alarm === null ){
       updateClients("alarm_error", "No Alarms");
-      ERROR = 0;
+		ERROR = 0;}
     }
   }
   else if(m.indexOf("FINSIGNAL")>=0)
   {
-//fs.appendFileSync('./console.log', 'FINSIGNAL1');
     //console.log("***************************************FINSIGNAL RECEIVED");
     updateClients("FINSIGNAL", m);
   }
@@ -260,24 +258,93 @@ sock.on('message', function(message){
     if(!isNaN(m)){
       CURRENT_POS = m;
       var p = mp.getCurrentPosition(m);
+	  posi = p;
       // console.log("Position --> "+p+", Direction "+mp.direction+", Mid Value "+mp.mid+", Stopped -> "+mp.stopped);
       var mid = 0;
-      if(mp.potlimit > 0 && p < mp.mid){
+       //console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" + mp.alarm);
+	  if(mp.alarm == "POT Hard Limit Switch Latched"){
+		 if(mp.direction == 1  ){
+            console.log("%%%%%%%%%%%%%%%%%%%%%");
+			writeToEthercatClient("1 16 3");
+            //console.log("Pot Stopping Jog");
+            mp.stopped = 1;
+          }
+		   UNDER_MOVEMENT = true;
+		  mp.alarm = "POT Hard Limit Switch Latched";
+		  //console.log("################################" + mp.alarm);
+		  updateClients("alarm_error", "POT Hard Limit Switch Latched");
+	  }else if(mp.alarm == "NOT Hard Limit Switch Latched"){
+		  if(mp.direction == -1 ){
+			  console.log("&&&&&&&&&&&&&&&&&&");
+            writeToEthercatClient("1 16 3");
+            //console.log("Not Stopping Jog");
+            mp.stopped = 1;
+          }
+		   UNDER_MOVEMENT = true;
+		  mp.alarm = "NOT Hard Limit Switch Latched";
+		  //console.log("##########&&&&&&&&&&############" + mp.alarm);
+		  updateClients("alarm_error", "NOT Hard Limit Switch Latched");
+	  }//* else if((mp.potlimit > 0 && p < mp.mid) && mp.direction == 1){
+       else if((mp.potlimit > 0 && p < mp.mid) && mp.direction == 1 ){		  
+		  //console.log("ppppppppppppppppppppppppppppppp" + p);
+	/* 	   if ( p < mp.potlimit)
+		  {
+			  
+			// Jog_feed ///////////////////////////////////////////////////&&&&&&&&&&&&&&&&&&&&&&&
+
+			 var rpm_const = 1333.3334*90;
+    var rpm = Math.round(rpm_const*1);
+	
+    //console.log("RPM Value from JSON is " + mp.feedrate);
+	//console.log("Write RPM"+rpm);
+	
+	//Move in Positive direction
+      //var cmd = "1 16 1\n";
+      //mp.setDirection(1);
+      //console.log("Writing command ==> "+cmd);
+      //writeToEthercatClient(cmd);
+      
+    
+      //console.log("Write RPM");
+	  mp.stopped = 0;
+      var d = "1 17 "+rpm+"\n";
+      writeToEthercatClient(d);
+      console.log("Jog Pot limit speed variable #1234#");
+			  
+          }  */
         ////console.log(mp.potlimit);
 		// var val = mp.potlimit - mp.threshold;
 		// if(mp.program_mode == "JOG"){
 		// 	val = (mp.potlimit - mp.threshold);
 		// }
+		
         if(p >= (mp.potlimit - mp.threshold)){
           if(mp.direction == 1  && mp.stopped != 1){
             writeToEthercatClient("1 16 3");
-            //console.log("Pot Stopping Jog");
+            console.log("Pot Stopping Jog");
             mp.stopped = 1;
           }
-		  updateClients("alarm_error", "POT Limit Exceeded");
+		   UNDER_MOVEMENT = true;
+		  //console.log("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" + mp.alarm);
+		  if(mp.alarm == "NOT Limit Exceeded"){
+			mp.alarm = mp.alarm + ",POT Limit Exceeded";
+			
+		  }else if(mp.alarm == null || mp.alarm == "") {			 
+				
+		    mp.alarm = "POT Limit Exceeded";
+		  } 
+		   
+		  
+		  
+		  updateClients("alarm_error", mp.alarm);
+		  
+		  
+		  
         }
       }
-      else if (mp.notlimit > 0){
+     // else if (mp.notlimit > 0 && mp.direction == -1){
+	 //* else if (mp.notlimit > 0 && mp.direction == -1 && (p<=mp.notlimit && p>=mp.potlimit)){
+	 else if (mp.notlimit > 0 && mp.direction == -1 && (p<=mp.notlimit && p>=mp.potlimit)){	 
 		  // var val = mp.notlimit
 		  // if(mp.program_mode == "JOG"){
   			// val = (mp.potlimit + mp.threshold);
@@ -286,10 +353,21 @@ sock.on('message', function(message){
         if(p <= (360 - mp.potlimit)){
           if(mp.direction == -1 && mp.stopped != 1){
             writeToEthercatClient("1 16 3");
-            //console.log("Not Stopping Jog");
+            console.log("Not Stopping Jog");
             mp.stopped = 1;
           }
-          updateClients("alarm_error", "NOT Limit Exceeded");
+		   UNDER_MOVEMENT = true;
+		   //console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" + mp.alarm);
+		  if(mp.alarm == "POT Limit Exceeded"){
+			mp.alarm = mp.alarm + ",NOT Limit Exceeded";
+			
+		  }else if(mp.alarm == null || mp.alarm == ""){			 
+				
+		    mp.alarm = "NOT Limit Exceeded";
+		  }
+		  
+		  updateClients("alarm_error", mp.alarm);
+		 
         }
       } 
       mp.cur_x_pos = p;
@@ -331,9 +409,12 @@ sock.on('message', function(message){
 		}else{
 			ui_clients[i].emit("destination_position",{"pos":p+(mp.factor_backlash*mp.drive_backlash)-pe_val});
 		}
+		//console.log(mp.potlimit + "TODO "+p+"#####" + mp.direction);
+		
       }
     }
-  });
+  }
+);
 
 //console.log("Chat server running at port 5000\n");
 function handler (req, res) {
@@ -395,24 +476,44 @@ io.on("connection", function(socket){
     init_drive_settings();
     //Set POT & NOT Limits
   })
+ 
+  if(posi >= (mp.potlimit - mp.threshold)){
+          if(mp.direction == 1  && mp.stopped != 1){
+            writeToEthercatClient("1 16 3");
+            console.log("Pot Stopping Jog");
+            mp.stopped = 1;
+          }
+		   UNDER_MOVEMENT = true;
+		  mp.alarm = "POT Limit Exceeded";
+		  updateClients("alarm_error", "");
+        }
   socket.on("reset", function(message){
-	 //Change the mode to PP
-	mp.workoffsetflag = 0;
-  	mp.workoffset = 0;
-	UNDER_MOVEMENT = false;
-    //Will reset alarms
-    mp.alarm = null;
-    //console.log("Reset command received");
-    writeToEthercatClient("1 13 0\n");
-    setTimeout(function(){
-      writeToEthercatClient("1 7 0\n");
-      setTimeout(function(){
-        writeToEthercatClient("1 8 0\n");
-      },1000);
-    },1000);
-      //console.log("Will power on the drive now: \n");
-    EXEC_LINE = -1;
-	//console.log("finished");
+	  //if( mp.alarm == "POT Limit Exceeded" && posi >= mp.potlimit){
+		
+		  //updateClients("alarm_error", "POT Limit Exceeded - Adjust to POT limit:" + mp.potlimit);
+	  //}else{
+		mp.workoffsetflag = 0;
+		mp.workoffset = 0;
+		UNDER_MOVEMENT = false;
+		//Will reset alarms
+		if(mp.alarm !=null && mp.direction == 1 && mp.alarm.indexOf("POT Limit Exceeded")>=0 && mp.alarm.indexOf("NOT Limit Exceeded")>=0){
+			mp.alarm = "NOT Limit Exceeded";
+		}if(mp.alarm !=null && mp.direction == -1 && mp.alarm.indexOf("POT Limit Exceeded")>=0 && mp.alarm.indexOf("NOT Limit Exceeded")>=0){
+			mp.alarm = "POT Limit Exceeded";
+		}else{
+			mp.alarm = null;
+		}
+		//console.log("Reset command received");
+		writeToEthercatClient("1 13 0\n");
+		setTimeout(function(){
+		  writeToEthercatClient("1 7 0\n");
+		  setTimeout(function(){
+			writeToEthercatClient("1 8 0\n");
+		  },1000);
+		},1000);
+		  //console.log("Will power on the drive now: \n");
+		EXEC_LINE = -1;
+	  //}
   })
 
   socket.on('resetMultiTurn', function(message){
@@ -437,8 +538,6 @@ io.on("connection", function(socket){
   })
 
   socket.on("execute", function(message){
-console.log("#############execute##################");
-    console.log(message);
     //console.log("Setting Step Mode Disabled");
     //writeToEthercatClient("1 29 0");
     //console.log("Inside Execute Message");
@@ -458,7 +557,6 @@ console.log("#############execute##################");
   })
 
   socket.on("exec_line", function(message){
-
     //console.log("Insied EXEC_LINE method");
     //console.log(message);
     socket.emit('exec_line', message);
@@ -477,33 +575,119 @@ console.log("#############execute##################");
 
   socket.on("jog_mode", function(message){
     // console.log("Received Jog event");
-	var rpm_const = 1333.3334*90;
-    var rpm = Math.round(rpm_const*message.feedrate);
-    //console.log("RPM Value from JSON is " + mp.feedrate);
-
+    //console.log(message);
+    var rpm_const = 1333.3334*90;
+    var rpm = Math.round(rpm_const*mp.feedrate);
+    console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$RPM Value from JSON is " + mp.feedrate);
+	console.log("Write RPM"+rpm);
     if(message.action == 1){
       //console.log("Write RPM");
 	  mp.stopped = 0;
-      var d = "1 17 "+rpm+"\n";
-      writeToEthercatClient(d);
-      //console.log(d);
+      
       //console.log("RPM write complete");
-
+		
       //console.log("Will start movement");
       //var pos = mp.drive_x_ratio*360*10;
       //var cmd = "1 12 "+pos+" \n";
       ////console.log(cmd);
       if(message.dir == 1){
-        //Move in Positive direction
-        var cmd = "1 16 1\n";
+		  
         mp.setDirection(1);
+       
+		//If POTLIMIT set move until potlimit
+		if(mp.potlimit>0 ){
+		
+			//Do nothing when both alaram present
+			if(mp.alarm !=null && mp.alarm.indexOf("POT Limit Exceeded")>=0 && mp.alarm.indexOf("NOT Limit Exceeded")>=0){
+				updateClients("reset_alert",{"data":""});
+				return;
+			}
+			//writeToEthercatClient("1 16 3\n");
+			
+			var d = "1 15 "+rpm+"\n";
+			writeToEthercatClient(d);			 
+			//console.log("My jog Command"+d);
+			
+			
+		
+			var CMD = [1,2,mp.potlimit];    
+			var dest_angle = mp.getDestinationAngle(CMD);
+			
+			
+			//console.log("Angls with Pitch Error "+parseFloat(mp.getAngleWithPitchError(mp.cur_x_pos,dest_angle)));
+			var dest_angle_with_pe = parseFloat(dest_angle)+parseFloat(mp.getAngleWithPitchError(mp.cur_x_pos,dest_angle));
+			//dest_angle_with_pe = dest_angle;
+			//console.log("Angles with PE Compenstation"+dest_angle_with_pe);
+			var pulses = mp.getPulsesRequired(dest_angle_with_pe);
+
+		 
+				
+			var cmd = "1 2 " + pulses + "\n";
+			
+			writeToEthercatClient(cmd);
+			
+			
+		}
+		else{
+			//Set feedrate
+			var d = "1 17 "+rpm+"\n";
+			writeToEthercatClient(d);
+			console.log("+++++++++++++++++++++++++++++++++++"+d);
+		
+			//Jog in  positive direction
+			 
+	         var cmd = "1 16 1\n";
+	         writeToEthercatClient(cmd);
+		}
       }
       else{
         mp.setDirection(-1);
-        var cmd = "1 16 2\n";
+        
+		if(mp.notlimit>0 ){
+		
+			//Do nothing when both alaram present
+			if(mp.alarm !=null && mp.alarm.indexOf("POT Limit Exceeded")>=0 && mp.alarm.indexOf("NOT Limit Exceeded")>=0){
+				updateClients("reset_alert",{"data":""});
+				return;
+			}
+		
+			var d = "1 15 "+rpm+"\n";
+			writeToEthercatClient(d);			 
+			console.log("My jog Command"+d);
+			
+			
+		
+			var CMD = [1,2,(mp.notlimit-360)];    
+			var dest_angle = mp.getDestinationAngle(CMD);
+			
+			
+			//console.log("Angls with Pitch Error "+parseFloat(mp.getAngleWithPitchError(mp.cur_x_pos,dest_angle)));
+			var dest_angle_with_pe = parseFloat(dest_angle)+parseFloat(mp.getAngleWithPitchError(mp.cur_x_pos,dest_angle));
+			//dest_angle_with_pe = dest_angle;
+			//console.log("Angles with PE Compenstation"+dest_angle_with_pe);
+			var pulses = mp.getPulsesRequired(dest_angle_with_pe);
+
+		 
+				
+			var cmd = "1 2 " + pulses + "\n";
+			
+			writeToEthercatClient(cmd);
+		
+		}else{
+			
+			//Set feedrate
+			var d = "1 17 "+rpm+"\n";
+			writeToEthercatClient(d);
+			
+			var cmd = "1 16 2\n";
+			writeToEthercatClient(cmd);
+			
+		}
+		
+		
       }
       //console.log("Writing command ==> "+cmd);
-      writeToEthercatClient(cmd);
+      
     }else{
       //Stop movement immediately
       //console.log("Stopping Jog");
@@ -544,8 +728,7 @@ console.log("#############execute##################");
     socket.broadcast.emit("destination_position",data);
   })
   socket.on("exec_next_line", function(data){
-console.log("#############execute line##################");
- console.log(data);
+
     if(mp.alarm !== null && mp.alarm !== undefined && UNDER_MOVEMENT == true){
       //console.log("There are some errors. not exexuting");
       return;
@@ -575,6 +758,11 @@ console.log("#############execute line##################");
   })
   socket.on("goToZero", function(){
     console.log("Move to zero now");
+	if(mp.alarm !=null && mp.alarm.indexOf("POT Limit Exceeded")>=0 && mp.alarm.indexOf("NOT Limit Exceeded")>=0){
+		//alert("Please Reset to Proceed
+		updateClients("reset_alert",{"data":""});
+		return;
+    }
     //1. Disable backlash now.
     fs.writeFileSync('./direction_cache', 1);
     xdir = 1;
@@ -616,284 +804,22 @@ console.log("#############execute line##################");
 	mp.ref_angle = 0;
   })
 
+//*********************************************latched code*************************************************
 
-//*******************below code for new user interface***********************************
-	socket.on('save_program', function (message1){
-	  
-		//todo: write file code
-		var jsobj = JSON.parse(message1);
+	socket.on("pot_hard_limit", function(data){
+		  mp.alarm  = "POT Hard Limit Switch Latched";
+		  
+		
+	})	
 	
-		var fn = "machine_code/" + jsobj.filename;
-		fs.writeFile(fn, jsobj.prgm, (err) =>{ 
-			  
-			// In case of a error throw err. 
-			if (err) throw err; 
-		});
-		socket.emit('save_progra_reply', 'Program saved successfully');
-	 
-    });
-	 
-	socket.on('filewriting', function (message1){
-		console.log("##########################################################");
-		console.log(message1);
-		fs.writeFile('/home/pi/v3/executed_programs.txt',message1, (err) =>{ 
-		// In case of a error throw err. 
-		if (err) throw err; 
-		});
-		//fs.file_put_contents("executed_programs.txt",message);
-		//console.log(exiting);
-		socket.emit('filewrite','program excecuted');
-	 
-     });
-	 socket.on('get_file_cont', function (message) {
-		 console.log("###########################111rrrrrrrrrrrr");
-		 fs.readFile('/home/pi/v3/executed_programs.txt',"utf8", function(error, content) {
-			console.log(content);
-			socket.emit('sent_file_cont',content);
-		});
-	});
-	 
-	 /* socket.on('alarms1', function (message1) {
-		 
+socket.on("not_hard_limit", function(data){
+		  mp.alarm  = "NOT Hard Limit Switch Latched";
 		
-		socket.emit('alarms','program excecuted');
-	 
-     });
-	 */
-	socket.on('axis_saved', function (message){
-		fs.writeFile('axis.txt',message, (err) => {
-			// In case of a error throw err. 
-			if (err) throw err; 
-		});
-		socket.emit('savesuccess',message);
-	 });
-	 socket.on('axisget', function (message){
-		fs.readFile('axis.txt',"utf8", function(error, content){
-			console.log(content);
-			socket.emit('axisput',content);
-		});
-	 });
-	 
-	socket.on('readaxis', function (message){
-		fs.readFile('axis.txt',"utf8", function(error, content){
-			socket.emit('putaxis',content);
-		});
-	 
-	 });
-	 
-	socket.on('getAllFiles', function (message3){
-		//todo readfile
-		var path = "machine_code";
-		var filelist="";
-		fs.readdir(path, function(err, items){
-			for (var i=0; i<items.length; i++){
-				filelist = filelist + '<div style="height:40px; font-size: 30px;" class="fa fa-code" ></div><font  size="6">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="editprogramv1.html?fn='+items[i]+',pagename=PROGRAM">'+ items[i] + '</a></font><br/>';
-			}
-			socket.emit('allFiles', filelist);
-		});
-	});
-	socket.on('getFiles', function (message3){
-		//todo readfile
-		var path = "machine_code";
-		var filelist="";
-		fs.readdir(path, function(err, items){
-			for (var i=0; i<items.length; i++){
-				filelist = filelist + '<div style="height:40px; font-size: 40px;" class="fa fa-code" ></div><font  size="6">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="autov1.html?pagename=AUTO=fn='+ items[i] + '">'+ items[i] + '</a></font><br/>';
-			}
-
-			socket.emit('Files', filelist);
-		});
-	});
-
-	socket.on('readFile',function(message4){
-		fs.readFile('machine_code/'+message4,"utf8", function(error, content){
-			socket.emit('Filecontent',content);
-		});
-		
-    }); 
-	
-	socket.on('readFile1',function(message4){
-	    fs.readFile('machine_code/'+message4,"utf8", function(error, content) {
-			socket.emit('Filecontent1',content);
-		});
-		
-    }); 
-	
-	socket.on('dlt_program', function(message6){
-		fs.unlink('machine_code/'+message6, function (err){
-			if (err) throw err;
-				
-			});
-		socket.emit('dltpgrm','Program file deleted successfully');
-	});
-	
-	socket.on('getparams',function(message4){
-		fs.readFile('settings/settings.json',"utf8", function(error, content){
-			socket.emit('params',content);
-		});
-	}); 	
-	
-	socket.on('getparams1',function(message4) {
-		fs.readFile('settings/settings.json',"utf8", function(error, content) {
-			socket.emit('params1',content);
-		});
-		
-    }); 
-
-	socket.on('getecs',function(message4) {
-		fs.readFile('settings/settings.json',"utf8", function(error, content) {
-			socket.emit('putecs',content);
-		});
-	}); 
-
-	socket.on('getpitch',function(message4) {
-		/*fs.readFile('settings/settings.json', (err, data) => {  
-		if (err) throw err;
-		//var student = JSON.parse(data);
-		//console.log(student);
-	   
-		socket.emit('pitch',data);
-		 });*/
-		fs.readFile('settings/settings.json',"utf8", function(error, content) {
-			socket.emit('pitch',content);
-		});
-		
-    });
-	
-	socket.on('getpitch1',function(message4) {
-		/* fs.readFile('settings/settings.json', (err, data) => {  
-		if (err) throw err;
-		//var student = JSON.parse(data);
-		//console.log(student);
-
-		socket.emit('pitch',data);
-		 });*/
-		fs.readFile('settings/settings.json',"utf8", function(error, content) {
-			socket.emit('pitch1',content);
-		});
-		
-    }); 	
-
-	socket.on('getoffset',function(message4) {
-		fs.readFile('Output2.txt',"utf8", function(error, content) {
-			socket.emit('offset',content);
-		});
-	}); 
-		
-	socket.on('getuserpw',function(message4) {
-	    fs.readFile('userpassword.txt',"utf8", function(error, content) {
-			socket.emit('upw',content);
-		});
-	});
-
-    socket.on('getadminpw',function(message5) {
-		fs.readFile('/home/pi/v3/adminpassword.txt',"utf8", function(error, content) {
-			socket.emit('apw',content);
-		});
-    }); 
-		
-	socket.on('changepass',function(message4){
-		fs.writeFile('userpassword.txt',message4, (err) => { 
-			// In case of a error throw err. 
-			if (err) throw err; 
-		});
-		socket.emit('pwsuccess','Password changed successfully');
-	});
-		
-		
-	socket.on('putparams',function(message1){
-		fs.writeFile('settings/settings.json',message1, (err) => { 
-			// In case of a error throw err. 
-			if (err) throw err; 
-			socket.emit('paramssaved','saved successfully');
-		});
-	});
-		
-	socket.on('writeecs',function(message1){
-		fs.writeFile('settings/settings.json',message1, (err) => { 
-			// In case of a error throw err. 
-			if (err) throw err; 
-			socket.emit('finishsaved','saved successfully');
-		});
-	});
-		
-	socket.on('putpitch',function(message1){
-		fs.writeFile('settings/settings.json',message1, (err) => { 
-			// In case of a error throw err. 
-			if (err) throw err; 
-			socket.emit('pitchsaved','saved successfully');
-		});
-	});
-	socket.on('putoffset',function(message1){
-		fs.writeFile('Output2.txt',message1, (err) => { 
-				  
-			// In case of a error throw err. 
-			if (err) throw err; 
-			socket.emit('offsetsaved','saved successfully');
-		});
-	});
-		
-	socket.on('deactivatedate',function(message1){
-		fs.writeFile('activation_date.txt',message1, (err) => { 
-			  
-			// In case of a error throw err. 
-			if (err) throw err; 
-			socket.emit('active_date','saved successfully');
-		});
-	});
-	socket.on('getdeactivatedate',function(message1){
-    	fs.readFile('activation_date.txt',"utf8", function(error, content) {
-			socket.emit('put_date',content);
-		});
-	});
-	
-	socket.on('loginwrite',function(message4){
-		fs.writeFile('login.txt',message4, (err) => { 
-			// In case of a error throw err. 
-			if (err) throw err; 
-		});
-		//socket.emit('loginadmin','Password changed successfully');
-	});
-	socket.on('loginread',function(message1){
-		fs.readFile('login.txt',"utf8", function(error, content) {
-			socket.emit('readlogin',content);
-		});
-	});
-	
-	socket.on("line",function(message){
-		console.log(message);
-		socket.emit("line_number", message);
-	});
-	
-	socket.on("getposition",function(message){
-		fs.readFile('position.txt',"utf8", function(error, content) {
-			socket.emit('putposition',content);
-		});
-	});
-		
-	socket.on("pos_data1", function(data){
-		var data1="400.400";
-		socket.emit("pos_data", data1);
-	})
-	socket.on("destination_position1", function(data){
-		var data1="200.200";
-		//fs.writeFile('position.txt',data1, (err) => { 
-			// In case of a error throw err. 
-			//if (err) throw err; 
-		//});
-		//  console.log(data);
-		//console.log("Sending current postion");
-		//console.log(data);
-		socket.emit("destination_position",data1);
-	})
-		
-//*******************************code ends here**************************************	
+	})	
 
 
-
+//*********************************************code ends here***********************************************
 });
-
-
 function resetCounters(){
   EXEC_LINE = 0;
 }
@@ -998,10 +924,9 @@ function emitAll(evt, m){
 /*G & M Codes command parser. Convert G & M Code to CIA 402 compliant command.
 This method determines the pulses and drive id required.
 After computation, the message is sent to the Ethercat server*/
-function execute_line(){ 
-	console.log("ooooooooooooooooooooooooooooooooooooooooooooooooooooo"+mp.parsed_lines.length);
+function execute_line(){
   if(EXEC_LINE >= mp.parsed_lines.length || EXEC_LINE < 0){
-    console.log("Program End reached. Terminate now");
+    //console.log("Program End reached. Terminate now");
 	g17flag = 0;
     UNDER_EXECUTION = false;
 	emitAll("program_complete",{'status':'end'});
@@ -1019,10 +944,9 @@ function execute_line(){
   var lettr= line.substr(0,1);
   var len= line.length;
   console.log("Executing Line "+line);
-
   updateLineNumberInUI();
   EXEC_LINE++;
-  console.log("Entered Execution stage" + mp.parsed_lines[EXEC_LINE]);
+  console.log("Entered Execution stage");
   if(line == "G91"){
     //console.log("Linear mode. (Relative mode) activated.");
     MOVE_TYPE = LINEAR;
@@ -1102,8 +1026,8 @@ function execute_line(){
   else if(line == "G10")
   {
     loopval=loopval-1;
-console.log("DBG:: Setting false, since G10");
-UNDER_MOVEMENT = false;
+	console.log("DBG:: Setting false, since G10");
+	UNDER_MOVEMENT = false;
     //console.log("Command G10 Received");
     if(loopval>0)
     {
@@ -1112,23 +1036,24 @@ UNDER_MOVEMENT = false;
     }
 	execute_line();
     return;
-   }else if(line == "G53")
+  }
+  else if(line == "G53")
   {
     //console.log("Work offset is deactivated");
     mp.workoffsetflag=0;
-mp.workoffset = 0
-console.log("DBG:: Setting false, since G53");
-UNDER_MOVEMENT = false;
+	mp.workoffset = 0
+	console.log("DBG:: Setting false, since G53");
+	UNDER_MOVEMENT = false;
     execute_line();
   }
   else if (["G54", "G55", "G56", "G57", "G58"].indexOf(line) >= 0 ) {
-console.log("Found Work Offset.. "+line);
-mp.workoffsetflag = 1;
-mp.workoffset = mp[line.toLowerCase()];
-console.log("Work Offset enabled now.. Values is "+mp.workoffset.toString());
-console.log("DBG:: Setting false, since G54-58");
-UNDER_MOVEMENT = false;
-execute_line();
+	console.log("Found Work Offset.. "+line);
+	mp.workoffsetflag = 1;
+	mp.workoffset = mp[line.toLowerCase()];
+	console.log("Work Offset enabled now.. Values is "+mp.workoffset.toString());
+	console.log("DBG:: Setting false, since G54-58");
+	UNDER_MOVEMENT = false;
+	execute_line();
   }
   else if(lettr == "R")
   {
@@ -1136,15 +1061,15 @@ execute_line();
     loopval=tmp;
     //console.log("Looping started");
     curpos=EXEC_LINE;
-console.log("DBG:: Setting false, since R");	
-UNDER_MOVEMENT = false;
+	console.log("DBG:: Setting false, since R");
+	UNDER_MOVEMENT = false;
     execute_line();
     return;
   }
   else if (lettr == "D")
   {
     delayval=parseFloat(line.substr(1,len));
-console.log("DBG:: Setting false, since D");
+	console.log("DBG:: Setting false, since D");
     setTimeout(function(){ UNDER_MOVEMENT = false; execute_line() }, delayval*1000);
     return;
   }
@@ -1164,8 +1089,8 @@ console.log("DBG:: Setting false, since D");
     writeToEthercatClient(c);
     updateClients("pos_data",{"data":mp.dest_x_pos});
     setTimeout(function(){
- console.log("DBG:: Setting false, since F");
- UNDER_MOVEMENT = false;
+	  console.log("DBG:: Setting false, since F");
+	  UNDER_MOVEMENT = false;
       execute_line();
     },100);
     //upload reg 6081 with the value of rpm.
@@ -1174,21 +1099,23 @@ console.log("DBG:: Setting false, since D");
   }
   else if(line == "M30"){
     EXEC_LINE = mp.parsed_lines.length + 1;
-console.log("DBG:: Setting false, since M30");
-UNDER_MOVEMENT = false;
-for(var y=0;y<mp.parsed_lines.length;y++){
+	console.log("DBG:: Setting false, since M30");
+	UNDER_MOVEMENT = false;
+	for(var y=0;y<mp.parsed_lines.length;y++){
 console.log("*****************" + mp.parsed_lines[y]);
 	
 		
 	 }
 	g17flag = 0;
+	
     return;
   }
   else if(line == "M99"){
     console.log("M99 Mode activated");
     EXEC_LINE = 0;
-console.log("DBG:: Setting false, since M99");
-UNDER_MOVEMENT = false;
+	console.log("DBG:: Setting false, since M99");
+	
+	UNDER_MOVEMENT = false;
     execute_line();
     return;
   }else if(line == "G167S"){
@@ -1204,30 +1131,27 @@ UNDER_MOVEMENT = false;
     g17flag = 2;
 	exec_g167 = exec_g167 + 2;
 	console.log("DBG:: Setting false, since G17");
+	
 	UNDER_MOVEMENT = false;
     execute_line();
     return;
   }
   else if(lettr == "A"){
-
     sock.movement = true;
-console.log("DBG:: Setting True, since A");
-UNDER_MOVEMENT = true;
-
-moveval=parseFloat(line.substr(1,len));
-
+	console.log("DBG:: Setting True, since A");
+	UNDER_MOVEMENT = true;
+    moveval=parseFloat(line.substr(1,len));
+	
 	/*if(g17flag != 0){
 		rval = moveval;
 		execute_line();
 		return;
 	}*/
-
 if(moveval == mp.ref_angle && MOVE_TYPE == "ABS"){
 console.log("\n\n----IN ABS Not moving since it's already in expected position..---\n\n");
 execute_line();
 return;
 }
-
 
     console.log("Command received A"+moveval);
     if(moveval == 0){
@@ -1319,37 +1243,31 @@ return;
 
     var c = CMD.join(" ");
     c = c+"\n";
-    //console.log("Will execute command "+c);
+    console.log("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwWill execute command "+c);
     writeToEthercatClient(c);
     console.log("*****************");
     console.log(mp.dest_x_pos);
     console.log("*****************");
     updateClients("pos_data",{"data":mp.dest_x_pos});
-    
-
-return;
+	
+	return;
   }
   
   else if(lettr == "P"){
 console.log("*************888888888888888888888888888888888888****");
-
 	g17flag = 2;
 	exec_g167 = exec_g167 + 2;
 	console.log("DBG:: Setting false, since G17");
 	UNDER_MOVEMENT = false;
     execute_line();
+	
     return;
   }
-  
-  
-  
-  
-  
 }
 function updateLineNumberInUI(){
   for(var i=0; i<ui_clients.length; i++){
     //console.log("Pushing Line number "+EXEC_LINE+" to --> "+i);
-	if(g17flag==2){
+    if(g17flag==2){
 		exec_g167++;
 	}
 	if(g17flag != 0){
@@ -1357,18 +1275,23 @@ function updateLineNumberInUI(){
 	}else{
 		ui_clients[i].emit("line_number", {line: EXEC_LINE});
 	}
-    
+	
   }
 }
 //getPEComponstationAt
 function updateClients(evt, message){
+ 
   for(var i=0; i< ui_clients.length; i++){
     if(evt == "pos_data" && xdir == 0){
       message.data = mp.dest_x_pos+mp.drive_backlash;
       ui_clients[i].emit(evt, message);
+	  
+		
     }else {
       ui_clients[i].emit(evt, message);
     }
+	
+	
 
   }
 }

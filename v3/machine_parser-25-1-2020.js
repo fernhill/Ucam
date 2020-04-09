@@ -249,8 +249,11 @@ var obj = {
               xdeg=360/pval;
               pcommand= "A"+xdeg;
               console.log("Will update the Commands by adding "+Math.abs(pval) +"values of " +pcommand);
-              for(var j=0;j <Math.abs(pval);j++){
+			  var j = 0;
+			  parsed_lines2[j]="G167S";
+              for(j=1;j <=Math.abs(pval);j++){
                 parsed_lines2[j]=pcommand;}
+				parsed_lines2[j]="P0";
                 console.log("Array to be added is "+parsed_lines2);
               this.parsed_lines.splice.apply(this.parsed_lines, [i,2].concat(parsed_lines2));
               n=this.parsed_lines.length;

@@ -127,10 +127,14 @@ angular.module('starter.controllers', [])
     //alert("Emergency status -> "+$scope.emergency);
     socket.emit("emergency",{"status":$scope.emergency});
 	hide_manual_screen = false;
+	//recall
+	socket.emit('filewriting',"");
   }
   socket.on('program_complete', function(data){
 	  console.log("Program execution completed");
 	  hide_manual_screen = false;
+	  //recall
+	  socket.emit('filewriting',"");
   })
 
   socket.on('pos_data', function(data){
@@ -237,12 +241,10 @@ angular.module('starter.controllers', [])
   $scope.resetAlarms = function(){
     socket.emit('reset',{'status':'clear'})
 	hide_manual_screen = false;
+	//recall
+	socket.emit('filewriting',"");
   }
-  socket.on("stop_pot", function(message){
-	  var f = {"dir":1,"action":0};
-	  socket.emit("jog_mode",f);
-	  
-  });
+ 
   socket.on("alarms", function(message){
     ////console.log("Alarm Data", message);
     var r = message.split(" ");
@@ -320,7 +322,10 @@ angular.module('starter.controllers', [])
 
 })
 .controller('HomeCtrl', function($scope, $http, $state,socket, $location, $ionicModal){
+	 //recall
+	socket.emit('getRunStatus', {});
   if(hide_manual_screen==true){
+
 	  alert("System is in auto mode. Please stop the program to visit manual mode screen.");
 	  $state.go("app.auto");
   }
@@ -374,12 +379,15 @@ angular.module('starter.controllers', [])
     socket.emit('goToZero', {});
   }
   
-  
-  socket.on('reset_alert', function(data){
-    alert("Reset to Proceed");
+  //recall
+  socket.on('runstatus', function(data){
+   
+	  alert("System is in auto mode. Please stop the program to visit manual mode screen.");
+	  $state.go("app.auto");
 
   });
 
+    
   socket.on('ref_complete', function(data){
     console.log("Inside Ref Complete");
     //Enable Button
@@ -395,6 +403,8 @@ angular.module('starter.controllers', [])
     //console.log("Inside Stop Execution. Will stop executions now..");
     socket.emit("stop_execution", {"status":"stop"});
 	hide_manual_screen = false;
+	//recall
+	socket.emit('filewriting',"");
   }
   $scope.run_mdi = function(){
     //console.log($scope.p.pgm_code_area);
@@ -715,7 +725,14 @@ angular.module('starter.controllers', [])
     var line_no = ($scope.lineno >= 0)? $scope.lineno-1 : 0
 	hide_manual_screen = true;
     console.log({file_name:$scope.file_name, mode:$scope.mode, ecs:ecs, lineno: line_no});
-    socket.emit("execute", {file_name:$scope.file_name, mode:$scope.mode, ecs:ecs, lineno: line_no});
+	
+	//recall
+	var jsn = $scope.file_name+'    line number: '+line_no;	
+	//alert(jsn);
+	socket.emit('filewriting',jsn);
+	
+    
+	socket.emit("execute", {file_name:$scope.file_name, mode:$scope.mode, ecs:ecs, lineno: line_no});
     $scope.lineno = 0;
     ////console.log({file_name:$scope.program.name, mode:$scope.program.mode, ecs:ecs});
   }
