@@ -5,6 +5,7 @@
         <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
         </button>
       </ion-nav-buttons>
+	  <ion-content><font color="white">34535</font></ion-content>
     </ion-nav-bar>
     <div ng-include src="'templates/position.html'" ng-show="show"></div>
     <ion-nav-view name="menuContent"></ion-nav-view>
@@ -15,19 +16,19 @@
     </ion-header-bar>
     <ion-content style="padding-top:25px;">
       <ion-list class="menu_item">
-        <ion-item menu-close href="#/app/home" class="menu_item" style="border-top:0px;">
+        <ion-item menu-close href="#/app/home" ng-click="" class="menu_item" style="border-top:0px;">
           Home
         </ion-item>
-        <ion-item menu-close href="#/app/manual" class="menu_item">
+        <ion-item menu-close  href="#/app/manual"  class="menu_item">
           Manual
         </ion-item>
-        <ion-item menu-close href="#/app/program" class="menu_item">
+        <ion-item menu-close  href="#/app/program"  class="menu_item">
           Program
         </ion-item>
-        <ion-item menu-close href="#/app/auto" class="menu_item">
+        <ion-item menu-close  href="#/app/auto"  class="menu_item">
           Auto
         </ion-item>
-        <ion-item menu-close href="#/app/settings" class="menu_item">
+        <ion-item menu-close  href="#/app/settings"  class="menu_item">
           Settings
         </ion-item>
       </ion-list>

@@ -1,0 +1,611 @@
+<script src="js/socket.io.js"></script>
+<style>
+body {font-family: Arial, Helvetica, sans-serif;}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  -webkit-animation-name: fadeIn; /* Fade in the background */
+  -webkit-animation-duration: 0.4s;
+  animation-name: fadeIn;
+  animation-duration: 0.4s
+}
+
+/* Modal Content */
+.modal-content {
+  position: fixed;
+  bottom: 0;
+  background-color: ;
+  width: 100%;
+  -webkit-animation-name: slideIn;
+  -webkit-animation-duration: 0.4s;
+  animation-name: slideIn;
+  animation-duration: 0.4s
+}
+
+/* The Close Button */
+.close {
+  color: black;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.modal-header1 {
+  padding: 2px 16px;
+  background-color: #5cb85c;
+  color: white;
+}
+
+.modal-body {padding: 2px 16px;
+ background-color: white;
+  color: black;}
+
+.modal-footer {
+  padding: 2px 16px;
+  background-color: #5cb85c;
+  color: white;
+}
+
+
+.modal1 {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  -webkit-animation-name: fadeIn; /* Fade in the background */
+  -webkit-animation-duration: 0.4s;
+  animation-name: fadeIn;
+  animation-duration: 0.4s
+}
+
+/* Modal Content */
+.modal-content {
+  position: fixed;
+  bottom: 0;
+  background-color: ;
+  width: 100%;
+  -webkit-animation-name: slideIn;
+  -webkit-animation-duration: 0.4s;
+  animation-name: slideIn;
+  animation-duration: 0.4s
+}
+
+/* The Close1 Button */
+.close1 {
+  color: black;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close1:hover,
+.close1:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.modal-header1 {
+  padding: 2px 16px;
+  background-color: #5cb85c;
+  color: white;
+}
+
+.modal-body {padding: 2px 16px;
+ background-color: white;
+  color: black;}
+
+.modal-footer {
+  padding: 2px 16px;
+  background-color: #5cb85c;
+  color: white;
+}
+
+/* Add Animation */
+@-webkit-keyframes slideIn {
+  from {bottom: -300px; opacity: 0} 
+  to {bottom: 0; opacity: 1}
+}
+
+@keyframes slideIn {
+  from {bottom: -300px; opacity: 0}
+  to {bottom: 0; opacity: 1}
+}
+
+@-webkit-keyframes fadeIn {
+  from {opacity: 0} 
+  to {opacity: 1}
+}
+
+@keyframes fadeIn {
+  from {opacity: 0} 
+  to {opacity: 1}
+}
+</style>
+<style>
+.container1 {
+	background-size: cover;
+  background: rgb(226,226,226); /* Old browsers */
+  background: -moz-linear-gradient(top,  rgba(226,226,226,1) 0%, rgba(219,219,219,1) 50%, rgba(209,209,209,1) 51%, rgba(254,254,254,1) 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(226,226,226,1)), color-stop(50%,rgba(219,219,219,1)), color-stop(51%,rgba(209,209,209,1)), color-stop(100%,rgba(254,254,254,1))); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top,  rgba(226,226,226,1) 0%,rgba(219,219,219,1) 50%,rgba(209,209,209,1) 51%,rgba(254,254,254,1) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top,  rgba(226,226,226,1) 0%,rgba(219,219,219,1) 50%,rgba(209,209,209,1) 51%,rgba(254,254,254,1) 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top,  rgba(226,226,226,1) 0%,rgba(219,219,219,1) 50%,rgba(209,209,209,1) 51%,rgba(254,254,254,1) 100%); /* IE10+ */
+  background: linear-gradient(to bottom,  rgba(226,226,226,1) 0%,rgba(219,219,219,1) 50%,rgba(209,209,209,1) 51%,rgba(254,254,254,1) 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e2e2e2', endColorstr='#fefefe',GradientType=0 ); /* IE6-9 */
+  padding: 20px;
+}
+
+.led-box {
+  height: 30px;
+  width: 25%;
+  margin: 10px 0;
+  float: left;
+}
+
+.led-box p {
+  font-size: 12px;
+  text-align: center;
+  margin: 1em;
+}
+
+
+.led-red {
+  margin: 0 auto;
+  width: 40px;
+  height: 40px;
+  background-color: #35d12f;
+  border-radius: 50%;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #304701 0 -1px 9px, #89FF00 0 2px 12px;
+}
+
+
+.led-yellow {
+  margin: 0 auto;
+  width: 24px;
+  height: 24px;
+  background-color: #FF0;
+  border-radius: 50%;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #808002 0 -1px 9px, #FF0 0 2px 12px;
+  -webkit-animation: blinkYellow 1s infinite;
+  -moz-animation: blinkYellow 1s infinite;
+  -ms-animation: blinkYellow 1s infinite;
+  -o-animation: blinkYellow 1s infinite;
+  animation: blinkYellow 1s infinite;
+}
+
+@-webkit-keyframes blinkYellow {
+    from { background-color: #FF0; }
+    50% { background-color: #AA0; box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #808002 0 -1px 9px, #FF0 0 2px 0; }
+    to { background-color: #FF0; }
+}
+@-moz-keyframes blinkYellow {
+    from { background-color: #FF0; }
+    50% { background-color: #AA0; box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #808002 0 -1px 9px, #FF0 0 2px 0; }
+    to { background-color: #FF0; }
+}
+@-ms-keyframes blinkYellow {
+    from { background-color: #FF0; }
+    50% { background-color: #AA0; box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #808002 0 -1px 9px, #FF0 0 2px 0; }
+    to { background-color: #FF0; }
+}
+@-o-keyframes blinkYellow {
+    from { background-color: #FF0; }
+    50% { background-color: #AA0; box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #808002 0 -1px 9px, #FF0 0 2px 0; }
+    to { background-color: #FF0; }
+}
+@keyframes blinkYellow {
+    from { background-color: #FF0; }
+    50% { background-color: #AA0; box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #808002 0 -1px 9px, #FF0 0 2px 0; }
+    to { background-color: #FF0; }
+}
+
+.led-green {
+  margin: 0 auto;
+  width: 40px;
+  height: 40px;
+  background-color: #35d12f;
+  border-radius: 50%;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #304701 0 -1px 9px, #89FF00 0 2px 12px;
+}
+
+.led-blue {
+  margin: 0 auto;
+  width: 24px;
+  height: 24px;
+  background-color: #24E0FF;
+  border-radius: 50%;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #006 0 -1px 9px, #3F8CFF 0 2px 14px;
+}
+
+</style>
+<div class="tile-stats" style="height:85px">
+<div>
+	<table>
+		<tr>
+			<td align="center" style="font-size:12px;height:30px">&nbsp;FAULT</td>
+			<td align="left" style="font-size:12px;">&nbsp;&nbsp;STATUS </td>
+			<td align="left" style="font-size:12px;">&nbsp;&nbsp;&nbsp;COMM </td>
+			<td align="left" style="font-size:12px;">&nbsp;&nbsp;&nbsp;HEALTH </td>
+			
+		</tr>
+		<tr>
+			<td><div class="led-red"  id="myBtn" style="margin-left:5px;"></div></td>
+			<td><div class="led-green" id="myBtn1" style="margin-left:12px;"></div> </td>
+			<td><div class="led-green" id="ethercatbtn" style="margin-left:22px;"></div> </td>
+			<td><div class="led-green" style="margin-left:14px;"></div> </td>
+		</tr>
+	</table>
+	
+</div>
+</div>
+
+<!-- Trigger/Open The Modal
+<button id="myBtn">Open Modal</button> -->
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">	
+    <div class="modal-header">
+      <span class="close">&times;</span>
+      <h2>ALARM STATUS</h2>
+    </div>
+    <div class="modal-body" id="messagedisplay" style="background-color:#05111b;color:white">
+     
+      <!--<p>Some other text...</p>
+	  <p>Some other text...</p>
+	  <p>Some other text...</p>
+	  <p>Some other text...</p>
+	  <p>Some other text...</p>
+	  <p>Some other text...</p> -->
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<div id="myModal1" class="modal1">
+
+  <!-- Modal content -->
+  <div class="modal-content">	
+    <div class="modal-header">
+      <span class="close1">&times;</span>
+      <h2>IO STATUS</h2>
+    </div>
+    <div class="col-md-12 modal-body" style="background-color:#05111b;color:white">
+      <div class="col-md-1">
+		<div style=" display: inline-block;">ECS</div>
+	  </div>
+	  <div class="col-md-1">
+     <div style="display: inline-block;">FIN</div>
+	 </div>
+	  <div class="col-md-1">
+	 <div style="display: inline-block;">SOL O/P</div>
+	 </div>
+	  <div class="col-md-1">
+     <div style="display: inline-block;">&nbsp;&nbsp;&nbsp;&nbsp;CL</div>
+	 </div>
+	  <div class="col-md-1">
+	 <div style="display: inline-block;">&nbsp;&nbsp;DCL</div>
+	 </div>
+	  <div class="col-md-1">
+	 <div style="display: inline-block;">ALM-IN</div> 
+	 </div>
+	  <div class="col-md-1">
+	 <div style="display: inline-block;">ALM-OUT</div>
+	 </div>
+	  <div class="col-md-1">
+	 <div style="display: inline-block;">&nbsp;HOME</div>
+	 </div>
+	  <div class="col-md-1">
+	 <div style="display: inline-block;">&nbsp;&nbsp;POT</div>
+	 </div>
+	  <div class="col-md-1">
+	 <div style="display: inline-block;">&nbsp;NOT</div>
+	 </div>
+	 <div class="col-md-1">
+	&nbsp;
+	 </div>
+	 <div class="col-md-1">
+	 &nbsp;
+	 </div>
+	 <div class="col-md-1">
+	 &nbsp;
+	 </div>
+	 <div class="col-md-1">
+	&nbsp;
+	 </div>
+	 <div class="col-md-1">
+	&nbsp;
+	 </div>
+	 <div class="col-md-1">
+	&nbsp;
+	 </div>
+	</div>
+     <div class="row" style="background-color:#05111b;color:white">
+      <div class="col-md-1">
+	    <img menu-toggle="left" src="images/off.png" id="img1"style="height:12px; margin-left:25px;">  </div>
+	  <div class="col-md-1">
+        <img menu-toggle="left" src="images/off.png" id="img2"style="height:12px; margin-left:30px;">	</div>
+	  <div class="col-md-1">
+		<img menu-toggle="left" src="images/off.png" id="img3" style="height:12px; margin-left:30px;">	 </div>
+	  <div class="col-md-1">
+		<img menu-toggle="left" src="images/off.png" id="img4" style="height:12px; margin-left:40px;">	 </div>
+	  <div class="col-md-1">
+		<img menu-toggle="left" src="images/off.png" id="img5" style="height:12px; margin-left:25px;">	 </div>
+	  <div class="col-md-1">
+		<img menu-toggle="left" src="images/off.png" id="img6" style="height:12px; margin-left:25px;">	 </div>
+	  <div class="col-md-1">
+		<img menu-toggle="left" src="images/off.png" id="img7" style="height:12px; margin-left:44px;">	 </div>
+	  <div class="col-md-1">
+		<img menu-toggle="left" src="images/off.png" id="img8" style="height:12px; margin-left:50px;">	 </div>
+	  <div class="col-md-1">
+		<img menu-toggle="left" src="images/off.png" id="img9" style="height:12px; margin-left:35px;">	 </div>
+	  <div class="col-md-1">
+		<img menu-toggle="left" src="images/off.png" id="img10" style="height:12px; margin-left:20px;">	 </div>
+	 <div class="col-md-1">
+	 &nbsp;
+	 </div>
+	 <div class="col-md-1">
+	 &nbsp;
+	 </div>
+	 <div class="col-md-1">
+	&nbsp;
+	 </div>
+	 <div class="col-md-1">
+	&nbsp;
+	 </div>
+	</div>
+   
+    
+
+</div>
+</div>
+
+<script>
+
+	var socket = io.connect('http://'+host+':9090');
+	// socket.emit("alarms1","haii");
+
+	socket.on("alarms", function(message){
+	var r = message.split(" ");
+	if((r[1][2] == 1)
+	 {
+	 document.getElementById("img8").src ="images/on.png";
+	 }
+	 else
+	 {
+	 document.getElementById("img8").src ="images/off.png";
+	 }
+	 
+	 if((r[1][3] == 1)
+	 {
+	 document.getElementById("img1").src ="images/on.png";
+	 }
+	 else
+	 {
+	 document.getElementById("img1").src ="images/off.png";
+	 }
+	 
+	 if((r[1][4] == 1)
+	 {
+	 document.getElementById("img4").src ="images/on.png";
+	 }
+	 else
+	 {
+	 document.getElementById("img4").src ="images/off.png";
+	 }
+	 
+	 if((r[1][5] == 1)
+	 {
+	 document.getElementById("img5").src ="images/on.png";
+	 }
+	 else
+	 {
+	 document.getElementById("img5").src ="images/off.png";
+	 }
+	 
+	 if((r[1][1] == 1)
+	 {
+	 document.getElementById("img10").src ="images/on.png";
+	 }
+	 else
+	 {
+	 document.getElementById("img10").src ="images/off.png";
+	 }
+	 
+	 if((r[1][0] == 1)
+	 {
+	 document.getElementById("img9").src ="images/on.png";
+	 }
+	 else
+	 {
+	 document.getElementById("img9").src ="images/off.png";
+	 }
+	 
+	 if((r[1][1] == 1)
+	 {
+	  document.getElementById("img6").src ="images/on.png";
+	  var ob2=document.getElementById("myBtn");
+	  ob2.style.backgroundColor= "#FF0000";
+	  document.getElementById("messagedisplay").inneHTML = "NOT Limit Exceeded - Hard Limit"
+	 }
+	 
+	 if(r[1][0] == 1)
+	 {
+	  document.getElementById("img6").src ="images/on.png";
+	  var ob2=document.getElementById("myBtn");
+	  ob2.style.backgroundColor= "#FF0000";
+	   document.getElementById("messagedisplay").inneHTML = "POT Limit Exceeded - Hard Limit"
+	 }
+	  
+	  
+	  
+		////console.log("Alarm Data", message);
+		/*var r = message.split(" ");
+		$scope.$apply(function(){
+		  $scope.home = (r[1][2] == 1) ? "images/on.png" : "images/off.png";
+		  $scope.ecs = (r[1][3] == 1) ? "images/on.png" : "images/off.png";
+		  $scope.cl = (r[1][4] == 1) ? "images/on.png" : "images/off.png";
+		  $scope.dcl = (r[1][5] == 1) ? "images/on.png" : "images/off.png";
+		  $scope.not = (r[1][1] == 1) ? "images/on.png" : "images/off.png";
+		  $scope.pot = (r[1][0] == 1) ? "images/on.png" : "images/off.png";
+
+		  if(r[1][1] == 1){
+			  $scope.almin = "./images/on.png";
+			  $scope.fault_img = "./images/red_l.png";
+			  $scope.alarm_message = "NOT Limit Exceeded - Hard Limit"
+		  }
+		  if(r[1][0] == 1){
+			  $scope.almin = "./images/on.png";
+			  $scope.fault_img = "./images/red_l.png";
+			  $scope.alarm_message = "POT Limit Exceeded - Hard Limit"
+		  }
+
+		})*/
+		/*for(var j=0;j<r[1].length;j++){
+		  var d = document.getElementById('alarm_x_'+j);
+		  if(d){
+			d.style.backgroundColor = (r[1][j] == 1) ? "red" : "green";
+		  }
+		}*/
+	  });
+ 
+  // socket.emit("alarm_error1","helloo");
+  socket.on("alarm_error", function(message){
+
+    if((message.startsWith("No Alarms"))){
+       document.getElementById("img6").src ="images/off.png";
+	   var ob2=document.getElementById("myBtn");
+       ob2.style.backgroundColor= "#35d12f";
+      // $scope.fault_img = "./images/green_l.png";
+    }
+    else{
+      document.getElementById("img6").src ="images/on.png";
+	   var ob2=document.getElementById("myBtn");
+       ob2.style.backgroundColor= "#FF0000";
+      // $scope.fault_img = "./images/red_l.png";
+    }
+
+    document.getElementById("messagedisplay").innerHTML = message;
+
+  });
+  
+ //  socket.emit("FINSIGNAL1","haihello");
+  socket.on("FINSIGNAL",function(){
+    document.getElementById("img2").src ="images/on.png";
+    //console.log("FINSIGNAL RECEIVED");
+  });
+  
+  
+  socket.on("ETH_DOWN", function(data){
+     // console.log("Ethercat Down");
+		 document.getElementById("img6").src ="images/on.png";
+		 var ob2=document.getElementById("myBtn");
+         ob2.style.backgroundColor= "#FF0000";
+		 document.getElementById("messagedisplay").innerHTML = "Communication down. Please check connection and restart";
+     // alert("Ethercat Down");
+  });
+
+  socket.on("ETH_UP", function(data){
+     // console.log("Ethercat Up");
+		 document.getElementById("img6").src ="images/off.png";
+         var ob2=document.getElementById("myBtn");
+         ob2.style.backgroundColor= "#35d12f";		
+	     document.getElementById("messagedisplay").innerHTML = "Communication link is up..";
+     // alert("Ethercat Up");
+  });
+</script>
+
+<script>
+
+ 
+ 
+// Get the modal
+var modal = document.getElementById('myModal');
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal 
+btn.onclick = function() {
+ var ob2=document.getElementById("myBtn");
+ //ob2.style.backgroundColor= "#FF0000";
+ modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+</script>
+
+
+
+<script>
+
+ 
+ 
+// Get the modal
+var modal1 = document.getElementById('myModal1');
+
+// Get the button that opens the modal
+var btn1 = document.getElementById("myBtn1");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close1")[0];
+
+// When the user clicks the button, open the modal 
+btn1.onclick = function() {
+ modal1.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal1.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal1) {
+    modal1.style.display = "none";
+  }
+}
+</script>

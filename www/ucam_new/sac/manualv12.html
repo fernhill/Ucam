@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>UCAM</title>
+
+	<!-- demo -->
+	<link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="../vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+	<link href="vkp/css/demo.css" rel="stylesheet">
+	
+
+	<!-- include -->
+
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+  
+	<!-- jQuery & jQuery UI + theme (required) -->
+	<link href="vkp/css/jquery-ui.min.css" rel="stylesheet">
+	<script src="vkp/js/jquery-latest.min.js"></script>
+	<script src="js/gauge.min.js"></script>
+	<script src="js/socket.io.js"></script>
+	
+	<!--<script src="vkp/js/bootstrap.min.js"></script>-->
+	
+		<!-- keyboard widget css & script (required) -->
+	<link rel="stylesheet" href="vkp//css/keyboard.css">
+	<link href="css/blurt.min.css" rel="stylesheet">
+	<script src="js/blurt.min.js"></script>
+	<script src="vkp//js/jquery.keyboard.js"></script>
+	<script src="js/top.js"></script>
+	
+
+	<!-- keyboard extensions (optional) -->
+	<script src="vkp//js/jquery.mousewheel.js"></script>
+	<!--
+	<script src="../js/jquery.keyboard.extension-typing.js"></script>
+	<script src="../js/jquery.keyboard.extension-autocomplete.js"></script>
+	-->
+	<script src="vkp//js/jquery.keyboard.extension-navigation.js"></script>
+	<!-- initialize keyboard (required) -->
+	<script>
+    document.getElementById("screen").innerHTML = "Manual";
+	</script>
+	<style>
+    
+	.tbbg {
+		background-image: url(images/444.jpg);
+		background-size: cover;
+	}
+	.btn1{/*dent around button*/
+		display: inline-block;
+		position: relative;
+		text-decoration: none;
+		color: rgba(3, 169, 244, 0.54);
+		width: 100px;
+		height: 100px;
+		border-radius: 50%;
+		text-align: center;
+		background: #f7f7f7;
+		box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.08);
+	}
+	.btn1 .fa {/*Button itself*/
+		position: absolute;
+		content: '';
+		width: 80px;
+		height: 80px;
+		line-height: 80px;
+		vertical-align: middle; 
+		left: 10px;
+		top: 9px;
+		border-radius: 50%;
+		font-size: 40px;
+		background-image: -webkit-linear-gradient(#e8e8e8 0%, #d6d6d6 100%);
+		background-image: linear-gradient(#e8e8e8 0%, #d6d6d6 100%);
+		text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.66);
+		box-shadow: inset 0 2px 0 rgba(255,255,255,0.5), 0 2px 2px rgba(0, 0, 0, 0.19);
+		border-bottom: solid 2px #b5b5b5;
+	  }
+	  
+	.btn1 .fa:active{
+		background-image: -webkit-linear-gradient(#efefef 0%, #d6d6d6 100%);
+		box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 2px 2px rgba(0, 0, 0, 0.19);
+		border-bottom: solid 2px #d8d8d8;
+	}
+	
+</style>
+   
+	</head>
+	
+	<body>
+	<table width="800px" height="500px" border="1" align="center" class="tbbg">
+	<tr><td valign="top">
+	
+<!-- top navigation -->
+        <div id="header"></div>
+		<div class="row top_tiles" style="margin-left:1px;margin-right:1px" >
+		<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" id="positionA"></div>
+		<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" id="positionB"></div> 
+		<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" id="fault"></div>
+		<div class="row" id="menu"></div>
+        </div>
+
+ <script>
+   
+	function restrat(){
+		brompt('Are you sure want to Reset ..!', function(){
+			window.location="";
+		});
+	}
+	function emergency(){
+		brompt('Emergency Continue ..!', function(){
+			window.location="";
+		});
+	}
+</script>
+
+
+
+
+ <div class="container body">
+      <div class="main_container">
+		<!-- top navigation 
+		<iframe src="top.html?p=Manual" height="200px" width="100%" frameBorder="0" scrolling="no" id="top" onload="settitle(this)"></iframe>
+         /top navigation -->
+		<div class="x_content11">
+			<div>
+				
+				
+				<div class="row" style="margin-left:3px;margin-right:3px;">
+					<div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
+						<div class="row">
+							<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+
+								<script>
+								
+								function turnright(){
+									//validitiy();
+									document.getElementById('loading').className="loading1";
+									
+								}
+								function turnleft(){
+									//validitiy();
+									document.getElementById('loading').className="loading2";
+									
+								}
+								</script>       
+								<br/><br/>
+									<!--<a href="#" class="btn1" onclick="animateGauges1()" id="gauge-value">
+									<i class="fa fa-angle-double-left" onclick="setDirection(1)" ></i></a>-->
+									
+									<a href="#" class="btn1" onclick="animateGauges2()" id="gauge-value2">
+									<i class="fa fa-angle-double-left" onclick="setDirection(0)" ></i></a>
+									<br/><center>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>LEFT</b></center><br/>
+								
+							</div><br/>
+							<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" style="margin-left:60px">
+		<canvas data-type="radial-gauge"
+        data-width="200"
+        data-height="200"
+        data-min-value="0"
+        data-max-value="360"
+        data-major-ticks="0,45,90,135,180,225,270,315,0"
+        data-minor-ticks="22"
+        data-ticks-angle="360"
+        data-start-angle="180"
+        data-stroke-ticks="false"
+        data-highlights="false"
+        data-color-plate=""
+        data-color-major-ticks="#ffff"
+        data-color-minor-ticks=""
+        data-color-numbers="#ffffff"
+        data-color-needle="rgba(240, 128, 128, 1)"
+        data-color-needle-end="rgba(255, 0, 0, .9)"
+        data-value-box="true"
+        data-animated-value="true"
+        data-value-text-shadow="false"
+        data-color-circle-inner="#ffffff"
+        data-color-needle-circle-outer="#ccc"
+        data-needle-circle-size="15"
+        data-needle-circle-outer="false"
+        data-animation-rule="linear"
+        data-needle-type="line"
+        data-needle-start="75"
+        data-needle-end="105"
+        data-needle-width="6"
+        data-borders="true"
+        data-border-inner-width="0"
+        data-border-middle-width="0"
+        data-border-outer-width="10"
+        data-color-border-outer="#ccc"
+        data-color-border-outer-end="#ccc"
+        data-color-needle-shadow-down="#222"
+        data-border-shadow-width="0"
+        data-animation-target="needle"
+        data-font-title-size="19"
+        data-color-title="#f5f5f5"
+        data-animation-duration="1500"
+        data-value="0"
+        data-animate-on-init="true"
+        data-use-min-path="true"
+></canvas>
+								
+								
+							</div>
+							<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2" style="margin-left:70px">
+								<br/>
+									<!--<i class="fa fa-angle-double-right" onclick="setDirection(0)"></i></a>-->
+									
+									
+									<a href="#" class="btn1" onclick="animateGauges1()" id="gauge-value">
+									<i class="fa fa-angle-double-right" onclick="setDirection(1)"></i></a>
+								<br/><center>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>RIGHT</b></center>
+								
+							</div>
+							<div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
+								<br/>
+								<input type="range" name="weight" id="range_weight" value="0" min="0" max="20" step="1" oninput="range_weight_disp.value = range_weight.value" class="slider" style="height:25px; margin-top: -20px;">
+							</div>
+							
+							<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+							
+							<output  id="range_weight_disp" style="color:white;font-size:20px;margin-top:0px"> 0</output>
+							</div>
+						</div>
+					</div><center>
+					<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+						<div><br/>
+							<button type="button" class="btn btn-primary btn3d" style="width:171px;height:50px;background-color: rgba(51, 122, 183,0.4); margin-top: -13px; margin-bottom: 0px;" onclick="zero()" id="zero_ref"><b>ZERO REF</b></button>																
+						</div>
+						<div>
+						<br/>
+							<div class="btn-group">
+								<center><b>STEP SIZE</b></center>
+								<button class="btn btn-primary" onclick="setStep(1)" id="one" style="background-color: rgba(51, 122, 183,0.4);height:50px;width:50px   type="button">0.1</button>
+								<button class="btn btn-primary" onclick="setStep(2)" id="two" style="background-color: rgba(51, 122, 183,0.4);height:50px;width:40px type="button">0.01</button>
+								<button class="btn btn-primary" onclick="setStep(3)" id="three" style="background-color: rgba(51, 122, 183,0.4);height:50px;width:40px type="button">0.001</button>
+							</div>
+						</div>
+						<div>
+							<br/>
+							<button  type="button" class="btn btn-primary btn3d" style="height:50px;width:171px;background-color: rgba(51, 122, 183,0.4);" onclick="startjog()" ><b><span id="jog">START JOG</span></b></button>
+							
+						</div>
+					</div></center>					
+				</div>	 
+			</div>
+		</div>
+    </div>
+     
+
+</div>
+<script> 
+	   
+         var url = window.location.search;
+		 var pagename = url.split("=")[1];
+		 var socket = io.connect('http://localhost:9090');
+		 socket.emit('getposition','123.123');
+		 socket.on('putposition',function(message){
+		 // alert(message);
+		 document.gauges[0].value=message;
+		 });
+		 var directionflag=0;
+	    function animateGauges1() {
+			document.gauges[0].value="360";
+			document.gauges[0].value="100";
+			directionflag=1;
+			document.getElementById("gauge-value").style.color="red";
+			document.getElementById("gauge-value2").style.color="#53a5ff";
+		//document.gauges[0].update();
+		
+        /*document.gauges.forEach(function(gauge) {
+            gauge.value =  250;
+			
+            setTimeout(function() {
+                console.log('new gauge value:' + gauge.value);
+            }, 1510);
+			gauge.update();
+        });*/
+		}
+	function animateGauges2() {
+		document.gauges[0].value="0";
+		
+		document.gauges[0].value="270";
+		directionflag=1;
+		document.getElementById("gauge-value2").style.color="red";
+		document.getElementById("gauge-value").style.color="#53a5ff";
+        /*document.gauges.forEach(function(gauge) {
+            gauge.value =  200;
+			
+            setTimeout(function() {
+                console.log('new gauge value:' + gauge.value);
+            }, 1510);
+			gauge.update();
+        });*/
+    }
+</script>
+<script>
+
+	    function zero() {
+		
+			if(active==0)
+		{
+			blurt('Application Expired. Please Activate');
+		}
+        else
+		
+		//document.getElementById('zero_ref').disabled = true;
+        var socket = io.connect('http://localhost:9090');
+        socket.emit('goToZero', "");
+		socket.on('finish',function(message){
+		  //alert(message);
+		});
+    }
+	
+	
+	var step_count=0;
+	
+	  function startjog() {	
+	 
+	  feed_rate=document.getElementById('range_weight_disp').value;
+        var socket = io.connect('http://localhost:9090');
+		
+			if(active==0)
+		{
+			blurt('Application Expired. Please Activate');
+			return;
+		}
+		else{
+		
+		if(directionflag==0){
+
+		blurt("Please select left of right direction");
+		return;
+		}
+		
+		
+    //console.log($scope.mode);
+    //console.log($scope.dir);
+    if(dir == 0  && step_count > 0){
+      //console.log("Changing Polarity");
+      //console.log("value before polarity "+$scope.p.step_count);
+      step_count = step_count * -1;
+    }
+    if(dir == 1){
+      step_count = Math.abs(step_count);
+    }
+	
+	if(step_count!=0){
+		
+	  //console.log('Sending Step Data');
+      //console.log({"drive_id":1, "position":$scope.p.step_count});
+	  socket.emit("step_mode",{"drive_id":1, "position":step_count});
+	  
+    }else{
+	//console.log("Sending Jog Mode");
+		if(document.getElementById('jog').innerHTML == "START JOG")
+		{  
+				if(feed_rate > 0 && feed_rate < 25){
+				  //console.log("Starting Jog Now");
+				  //$scope.display_text = "STOP JOG"
+				  document.getElementById("jog").innerHTML= "STOP JOG";
+				  var f = {"dir":dir,"action":1};
+				  //console.log(f);
+				  
+				  socket.emit("jog_mode",f);
+				  
+				  //blurt("step_count: " +step_count +", feed_rate: "+ feed_rate +", direction: "+ dir);
+			   }
+				else
+				{
+				  blurt("Invalid Feed rate. Please enter value between 1-20");
+				}
+		}else{
+		   //console.log("Stopping Jog now");
+		   
+		   socket.emit("jog_mode",{"dir":dir,"action":0});
+		   document.getElementById("jog").innerHTML= "START JOG";
+		}
+	}
+    }
+  }
+		
+	function setStep(val){
+    if(val == 1){
+		if(Math.abs(step_count)==0.1){
+			step_count = 0;
+			var ob1=document.getElementById('one').style.background = "rgba(51, 122, 183,0.4)";
+			
+		}else{
+			step_count = 0.1;
+			var ob1=document.getElementById('one').style.background = "rgba(45, 204, 112, 0.52)";
+			var ob2=document.getElementById('two').style.background = "rgba(51, 122, 183,0.4)";
+			var ob3=document.getElementById('three').style.background = "rgba(51, 122, 183,0.4)";
+		}
+		
+    }else if (val == 02) {
+		if(Math.abs(step_count)==0.01){
+			step_count = 0;
+			var ob1=document.getElementById('two').style.background = "rgba(51, 122, 183,0.4)";
+			
+		}else{
+			step_count = 0.01;
+			var ob1=document.getElementById('one').style.background = "rgba(51, 122, 183,0.4)";
+			var ob2=document.getElementById('two').style.background = "rgba(45, 204, 112, 0.52)";
+			var ob3=document.getElementById('three').style.background = "rgba(51, 122, 183,0.4)";
+		}
+     
+    }else{
+		if(Math.abs(step_count)==0.001){
+			step_count = 0;
+			var ob1=document.getElementById('three').style.background = "rgba(51, 122, 183,0.4)";
+			
+		}else{
+			step_count = 0.001;
+			var ob1=document.getElementById('one').style.background = "rgba(51, 122, 183,0.4)";
+			var ob3=document.getElementById('two').style.background = "rgba(51, 122, 183,0.4)";
+			var ob2=document.getElementById('three').style.background = "rgba(45, 204, 112, 0.52)";
+		}
+		
+    }
+  }
+	
+    function setDirection(dir1){
+    if(dir1 == 1)
+	{ var ob1=document.getElementById("gauge-value");
+	  var ob2=document.getElementById("gauge-value2");
+	  ob1.style.background = "rgba(51, 122, 183,0.4)";
+	  ob2.style.background = "#d6d6d6";
+      dir = 1;  
+    }
+	else
+	{ var ob1=document.getElementById("gauge-value");
+	  var ob2=document.getElementById("gauge-value2");
+	  ob1.style.background = "#d6d6d6";
+	  ob2.style.background = "rgba(51, 122, 183,0.4)";
+      dir = 0;
+    }
+    }
+    
+	
+</script>
+
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+  
+
+    
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+	</div>
+		</td>
+</tr>
+</table>
+</body>
+</html>

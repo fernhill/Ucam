@@ -21,6 +21,7 @@ var MODE, ECS, P_OBJ, UNDER_EXECUTION, EXEC_LINE, SP_ENABLED;
 var ERROR = 0;
 var LINEAR = 1, ABS = 0;
 var MOV_MODE = LINEAR;
+var MOVE_TYPE;
 var X_RATIO = 20000;
 //var X_OFFSET = 800000;
 var X_CUR_POS = 0;
@@ -318,7 +319,7 @@ sock.on('message', function(message){
 		// 	val = (mp.potlimit - mp.threshold);
 		// }
 		
-        if(p >= (mp.potlimit - mp.threshold)){
+        if(p >= (mp.potlimit - mp.threshold) && p <= (mp.potlimit + mp.threshold )){
           if(mp.direction == 1  && mp.stopped != 1){
             writeToEthercatClient("1 16 3");
             console.log("Pot Stopping Jog");
@@ -328,10 +329,11 @@ sock.on('message', function(message){
 		  //console.log("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" + mp.alarm);
 		  if(mp.alarm == "NOT Limit Exceeded"){
 			mp.alarm = mp.alarm + ",POT Limit Exceeded";
-			
+
 		  }else if(mp.alarm == null || mp.alarm == "") {			 
 				
 		    mp.alarm = "POT Limit Exceeded";
+			
 		  } 
 		   
 		  
@@ -344,26 +346,28 @@ sock.on('message', function(message){
       }
      // else if (mp.notlimit > 0 && mp.direction == -1){
 	 //* else if (mp.notlimit > 0 && mp.direction == -1 && (p<=mp.notlimit && p>=mp.potlimit)){
-	 else if (mp.notlimit > 0 && mp.direction == -1 && (p<=mp.notlimit && p>=mp.potlimit)){	 
+	 else if (mp.notlimit > 0 && mp.direction == -1 ){	 
 		  // var val = mp.notlimit
 		  // if(mp.program_mode == "JOG"){
   			// val = (mp.potlimit + mp.threshold);
   		  // }
         ////console.log(mp.potlimit);
-        if(p <= (360 - mp.potlimit)){
+		//(249.00 <= 250+1.5 && 249.99 >= 250-1.5)  // 249.99 <=251.5 && 249.99>=248.5
+        if(p <= (mp.notlimit + mp.threshold ) && p >= (mp.notlimit - mp.threshold)){
           if(mp.direction == -1 && mp.stopped != 1){
             writeToEthercatClient("1 16 3");
             console.log("Not Stopping Jog");
             mp.stopped = 1;
           }
 		   UNDER_MOVEMENT = true;
-		   //console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" + mp.alarm);
+		   //console.log(p+"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" + mp.alarm);
 		  if(mp.alarm == "POT Limit Exceeded"){
 			mp.alarm = mp.alarm + ",NOT Limit Exceeded";
 			
 		  }else if(mp.alarm == null || mp.alarm == ""){			 
 				
 		    mp.alarm = "NOT Limit Exceeded";
+			
 		  }
 		  
 		  updateClients("alarm_error", mp.alarm);
@@ -468,6 +472,11 @@ io.on("connection", function(socket){
     //console.log("Stopping execution now...");
     writeToEthercatClient("1 33 0\n");
     EXEC_LINE = mp.parsed_lines.length + 1;
+	//recall: clean file
+	fs.writeFile('/home/pi/v3/executed_programs.txt',"", (err) =>{ 
+		// In case of a error throw err. 
+		if (err) throw err; 
+	});
   })
 
   //Initiliaze all settings on the drive
@@ -486,23 +495,16 @@ io.on("connection", function(socket){
 		   UNDER_MOVEMENT = true;
 		  mp.alarm = "POT Limit Exceeded";
 		  updateClients("alarm_error", "");
+		  
         }
   socket.on("reset", function(message){
-	  //if( mp.alarm == "POT Limit Exceeded" && posi >= mp.potlimit){
-		
-		  //updateClients("alarm_error", "POT Limit Exceeded - Adjust to POT limit:" + mp.potlimit);
-	  //}else{
+	  
 		mp.workoffsetflag = 0;
 		mp.workoffset = 0;
 		UNDER_MOVEMENT = false;
-		//Will reset alarms
-		if(mp.alarm !=null && mp.direction == 1 && mp.alarm.indexOf("POT Limit Exceeded")>=0 && mp.alarm.indexOf("NOT Limit Exceeded")>=0){
-			mp.alarm = "NOT Limit Exceeded";
-		}if(mp.alarm !=null && mp.direction == -1 && mp.alarm.indexOf("POT Limit Exceeded")>=0 && mp.alarm.indexOf("NOT Limit Exceeded")>=0){
-			mp.alarm = "POT Limit Exceeded";
-		}else{
-			mp.alarm = null;
-		}
+		
+		mp.alarm = null;
+		console.log("alarm is :"+mp.alarm+" Direction is :"+mp.direction);
 		//console.log("Reset command received");
 		writeToEthercatClient("1 13 0\n");
 		setTimeout(function(){
@@ -513,7 +515,13 @@ io.on("connection", function(socket){
 		},1000);
 		  //console.log("Will power on the drive now: \n");
 		EXEC_LINE = -1;
-	  //}
+		
+		//recall: clean file
+		fs.writeFile('/home/pi/v3/executed_programs.txt',"", (err) =>{ 
+			// In case of a error throw err. 
+			if (err) throw err; 
+		});
+	  
   })
 
   socket.on('resetMultiTurn', function(message){
@@ -534,6 +542,12 @@ io.on("connection", function(socket){
       //console.log("Off Emergency");
       writeToEthercatClient("1 14 0");
     }
+	
+	//recall: clean file
+	fs.writeFile('/home/pi/v3/executed_programs.txt',"", (err) =>{ 
+		// In case of a error throw err. 
+		if (err) throw err; 
+	});
 
   })
 
@@ -545,8 +559,20 @@ io.on("connection", function(socket){
     //socket.broadcast.emit('execute', message);
     mp.resetDirection();
     var line_no = message.lineno;
+	var message1 = message.file_name +  ":" + line_no;
+	fs.writeFile('/home/pi/v3/executed_programs.txt',message1, (err) =>{ 
+		// In case of a error throw err. 
+		if (err) throw err; 
+	});
     execute_file(message, line_no)
   })
+  socket.on('get_file_cont', function (message) {
+		 console.log("###########################111rrrrrrrrrrrr");
+		 fs.readFile('/home/pi/v3/executed_programs.txt',"utf8", function(error, content) {
+			console.log("REEEEEAAAAAADDDDDD" + content);
+			updateClients('sent_file_cont',content);
+		});
+	});
   socket.on("line_number", function(message){
     //console.log(message)
     socket.broadcast.emit('line_number', message)
@@ -578,8 +604,8 @@ io.on("connection", function(socket){
     //console.log(message);
     var rpm_const = 1333.3334*90;
     var rpm = Math.round(rpm_const*mp.feedrate);
-    console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$RPM Value from JSON is " + mp.feedrate);
-	console.log("Write RPM"+rpm);
+    console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$message.dir " + message.dir);
+	//console.log("Write RPM"+rpm);
     if(message.action == 1){
       //console.log("Write RPM");
 	  mp.stopped = 0;
@@ -591,12 +617,12 @@ io.on("connection", function(socket){
       //var cmd = "1 12 "+pos+" \n";
       ////console.log(cmd);
       if(message.dir == 1){
-		  
+		
         mp.setDirection(1);
        
 		//If POTLIMIT set move until potlimit
 		if(mp.potlimit>0 ){
-		
+			 
 			//Do nothing when both alaram present
 			if(mp.alarm !=null && mp.alarm.indexOf("POT Limit Exceeded")>=0 && mp.alarm.indexOf("NOT Limit Exceeded")>=0){
 				updateClients("reset_alert",{"data":""});
@@ -644,7 +670,7 @@ io.on("connection", function(socket){
         mp.setDirection(-1);
         
 		if(mp.notlimit>0 ){
-		
+			
 			//Do nothing when both alaram present
 			if(mp.alarm !=null && mp.alarm.indexOf("POT Limit Exceeded")>=0 && mp.alarm.indexOf("NOT Limit Exceeded")>=0){
 				updateClients("reset_alert",{"data":""});
@@ -691,7 +717,9 @@ io.on("connection", function(socket){
     }else{
       //Stop movement immediately
       //console.log("Stopping Jog");
-      writeToEthercatClient("1 16 3\n");
+	  
+      //writeToEthercatClient("1 16 3\n");
+	  writeToEthercatClient("1 10 1\n");
     }
   })
   socket.on("start_homing", function(data){
@@ -756,52 +784,92 @@ io.on("connection", function(socket){
     socket.broadcast.emit("Disable ECS",data);
     mp.initParams();
   })
-  socket.on("goToZero", function(){
+socket.on("goToZero", function(){
     console.log("Move to zero now");
+	
 	if(mp.alarm !=null && mp.alarm.indexOf("POT Limit Exceeded")>=0 && mp.alarm.indexOf("NOT Limit Exceeded")>=0){
 		//alert("Please Reset to Proceed
+
 		updateClients("reset_alert",{"data":""});
+		
+		
 		return;
     }
-    //1. Disable backlash now.
-    fs.writeFileSync('./direction_cache', 1);
-    xdir = 1;
-    mp.initParams();
-    console.log("Params initialized");
-    MOVE_TYPE = ABS;
-    mp.mode = "ABS";
-    //console.log("*******************MOvetype mode is ",MOVE_TYPE);
-    //console.log("*******************MOde is "+mp.mode);
-    writeToEthercatClient("1 18 1\n");
-    MOVE_TYPE = ABS;
-    mp.mode = "ABS";
-    mp.shortest_path = false;
-    if(mp.potlimit > 0 || mp.notlimit > 0){
-	mp.shortest_path = true;
-    }
-    var cmd=[1, 31, 0];
-    tmp=mp.getDestinationAngle(cmd);
-    console.log("TMP value is" +tmp);
-    writeToEthercatClient("1 8 0\n");
-    dir_change = 0;
-    fs.writeFileSync('./direction_cache', 1);
-    if(mp.home_dir == 0){
-      console.log("Homing direction is negative.. So reverse");
-      tmp = (360-tmp)*-1;
-	  fs.writeFileSync('./direction_cache', -1);
-    }
-   
-    tmp =mp.getPulsesRequired(tmp);
-    cmd[2] =tmp;
-    cmd=cmd.join(" ");
-    cmd=cmd+ "\n";
-    console.log("1--------------Will execute command "+cmd);
-    //fs.writeFileSync('./direction_cache', 0);
-    setTimeout(function(){
-      console.log("2------------Will execute command "+cmd);
-      writeToEthercatClient(cmd);
-  	}, 1000);
-	mp.ref_angle = 0;
+	
+	if(mp.potlimit > 0 || mp.notlimit > 0){
+			var rpm_const = 1333.3334*90;
+			var rpm = Math.round(rpm_const*mp.feedrate);    
+			var d = "1 15 "+rpm+"\n";
+			writeToEthercatClient(d);			 
+			//console.log("My jog Command"+d);
+			var targt = -360;
+			console.log("My jog Command"+targt);
+			console.log("My position Command"+posi);
+			if(posi>=180){
+				targt = 0.0;
+			}
+			var CMD = [1,2,targt];    
+			var dest_angle = mp.getDestinationAngle(CMD);
+			
+			
+			//console.log("Angls with Pitch Error "+parseFloat(mp.getAngleWithPitchError(mp.cur_x_pos,dest_angle)));
+			var dest_angle_with_pe = parseFloat(dest_angle)+parseFloat(mp.getAngleWithPitchError(mp.cur_x_pos,dest_angle));
+			//dest_angle_with_pe = dest_angle;
+			//console.log("Angles with PE Compenstation"+dest_angle_with_pe);
+			var pulses = mp.getPulsesRequired(dest_angle_with_pe);
+
+		 
+				
+			var cmd = "1 2 " + pulses + "\n";
+			
+			writeToEthercatClient(cmd);
+			
+    }else{
+	
+	
+	
+			//1. Disable backlash now.
+			fs.writeFileSync('./direction_cache', 1);
+			xdir = 1;
+			mp.initParams();
+			console.log("Params initialized");
+			MOVE_TYPE = ABS;
+			mp.mode = "ABS";
+			//console.log("*******************MOvetype mode is ",MOVE_TYPE);
+			//console.log("*******************MOde is "+mp.mode);
+			writeToEthercatClient("1 18 1\n");
+			MOVE_TYPE = ABS;
+			mp.mode = "ABS";
+			mp.shortest_path = false;
+			if(mp.potlimit > 0 || mp.notlimit > 0){
+			mp.shortest_path = true;
+			}
+			var cmd=[1, 31, 0];
+			tmp=mp.getDestinationAngle(cmd);
+			console.log("TMP value is" +tmp);
+			writeToEthercatClient("1 8 0\n");
+			dir_change = 0;
+			fs.writeFileSync('./direction_cache', 1);
+			if(mp.home_dir == 0){
+			  console.log("Homing direction is negative.. So reverse");
+			  tmp = (360-tmp)*-1;
+			  fs.writeFileSync('./direction_cache', -1);
+			}
+		   
+			tmp =mp.getPulsesRequired(tmp);
+			cmd[2] =tmp;
+			cmd=cmd.join(" ");
+			cmd=cmd+ "\n";
+			console.log("1--------------Will execute command "+cmd);
+			//fs.writeFileSync('./direction_cache', 0);
+			setTimeout(function(){
+			  console.log("2------------Will execute command "+cmd);
+			  writeToEthercatClient(cmd);
+			}, 1000);
+			mp.ref_angle = 0;
+	
+   }
+	
   })
 
 //*********************************************latched code*************************************************
@@ -930,6 +998,11 @@ function execute_line(){
 	g17flag = 0;
     UNDER_EXECUTION = false;
 	emitAll("program_complete",{'status':'end'});
+	//recall: clean file
+	fs.writeFile('/home/pi/v3/executed_programs.txt',"", (err) =>{ 
+		// In case of a error throw err. 
+		if (err) throw err; 
+	});
     return;
   }
 //   if(EXEC_LINE == 0){
@@ -1190,6 +1263,7 @@ return;
       var traverse_angle = parseFloat(pulses/20000);
       if(traverse_angle > balance){
         mp.alarm = "Destination breaches POT Limit";
+		
         return;
       }
     }else if (mp.notlimit > 0 && pulses < 0) {
@@ -1202,6 +1276,7 @@ return;
       var traverse_angle = parseFloat((pulses*-1)/20000);
       if(traverse_angle > balance){
         mp.alarm = "Destination breaches NOT Limit";
+		
         return;
       }
     }else {

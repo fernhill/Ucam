@@ -50,11 +50,13 @@ angular.module('starter.controllers', [])
 .controller('AppCtrl', function($scope, $ionicModal, $timeout,$location,$ionicModal) {
   $scope.loginData = {};
   $scope.path = "";
+  socket.emit('get_file_cont',"123");
   //console.log("current location",$location.path());
 })
 
 .controller('PositionCtrl', function($scope, $http, socket, $ionicModal, $location, $rootScope){
   //console.log("Inside Position Controller");
+  
   $scope.p = {x_dest:'', x_cur:''}
   $scope.p.x_dest = 0;
   $scope.p.x_cur = 0;
@@ -114,7 +116,13 @@ angular.module('starter.controllers', [])
     $scope.pos_modal.remove();
   });
 
+ socket.on('reset_alert', function(data){
+    alert("Reset to Proceed");
 
+  });
+  
+  
+  
 
 
   //var p ={pot:"images/off.png", not:"images/off.png"};
@@ -126,12 +134,17 @@ angular.module('starter.controllers', [])
     $scope.emergency = !$scope.emergency;
     //alert("Emergency status -> "+$scope.emergency);
     socket.emit("emergency",{"status":$scope.emergency});
+	document.getElementById("refintim").innerHTML = "EMERGENCY";
 	hide_manual_screen = false;
   }
   socket.on('program_complete', function(data){
 	  console.log("Program execution completed");
 	  hide_manual_screen = false;
   })
+  
+  //socket.emit('get_file_cont',"123");
+
+
 
   socket.on('pos_data', function(data){
     console.log("Position Data",data);
@@ -236,7 +249,10 @@ angular.module('starter.controllers', [])
   //rgba(45, 204, 112, 0.52)
   $scope.resetAlarms = function(){
     socket.emit('reset',{'status':'clear'})
+	
+	document.getElementById("refintim").innerHTML = "RESET";
 	hide_manual_screen = false;
+	
   }
   socket.on("stop_pot", function(message){
 	  var f = {"dir":1,"action":0};
@@ -324,6 +340,7 @@ angular.module('starter.controllers', [])
 	  alert("System is in auto mode. Please stop the program to visit manual mode screen.");
 	  $state.go("app.auto");
   }
+ 
 
   $scope.p={};
   $scope.max_rpm = 20;
@@ -372,13 +389,13 @@ angular.module('starter.controllers', [])
     document.getElementsByClassName('zref_btn').disabled = true;
     console.log("Emitting Goto Zero");
     socket.emit('goToZero', {});
+	//$scope.refintim_text = "Zero Ref";
+	
+	document.getElementById("refintim").innerHTML = "ZERO REF";
   }
   
   
-  socket.on('reset_alert', function(data){
-    alert("Reset to Proceed");
-
-  });
+ 
 
   socket.on('ref_complete', function(data){
     console.log("Inside Ref Complete");
@@ -449,18 +466,44 @@ angular.module('starter.controllers', [])
   $scope.keyboard_options = {numberPad:true,showInMobile:true,
                             forcePosition:'bottom',customClass:'kb_style'};
   $scope.next = function(destination){
+	  
     //console.log(destination);
-    if(destination == "manual"){
-      $state.go("app.manual");
-    }else if(destination == "program"){
-      $state.go("app.program");
-    }else if(destination == "auto"){
-      $state.go("app.auto");
-    }else if(destination == "settings"){
-      $state.go("app.settings");
-    }else{
-      $state.go("app.home");
-    }
+	 //socket.emit('get_file_cont',"123");
+	 /*socket.on('sent_file_cont',function(content){
+		
+		
+		
+		if(content==""){
+		
+		}else{
+			
+				var file_name=content.split(":")[0];
+				var line_num=content.split(":")[1];
+			
+				var values = "";
+
+				destination = "auto";
+					
+			
+		}*/
+		
+
+		
+		 if(destination == "manual"){
+		  $state.go("app.manual");
+		}else if(destination == "program"){
+		  $state.go("app.program");
+		}else if(destination == "auto"){
+		  $state.go("app.auto");
+		}else if(destination == "settings"){
+		  $state.go("app.settings");
+		}else{
+		  $state.go("app.home");
+		}
+		
+		
+	//})
+   
   }
   $scope.p={feed_rate : 10, step_count:0.1};
   $scope.display_text = "START JOG";
@@ -553,6 +596,7 @@ angular.module('starter.controllers', [])
 			
 		  }else{
 			  socket.emit("jog_mode",f);
+			  $scope.refintim_text = "START JOG";
 			  
 		  }
           
@@ -563,6 +607,7 @@ angular.module('starter.controllers', [])
       else{
         //console.log("Stopping Jog now");
         socket.emit("jog_mode",{"dir":$scope.dir,"action":0});
+		$scope.refintim_text = "STOP JOG";
         $scope.display_text = "START JOG";
       }
     }
@@ -626,6 +671,7 @@ angular.module('starter.controllers', [])
   $scope.stop_execution = function(){
     //console.log("Inside Stop Execution. Will stop executions now..");
     socket.emit("stop_execution", {"status":"stop"});
+	document.getElementById("refintim").innerHTML = "STOP EXECUTION";
   }
 
   $http.get(DAC_SETTINGS_API)
@@ -666,6 +712,7 @@ angular.module('starter.controllers', [])
 
   $scope.choose_file = function(){
     $state.go("app.program");
+	document.getElementById("refintim").innerHTML = "SELECT PROGRAM";
   }
 
   $scope.setPgmMode = function(mode){
@@ -717,6 +764,7 @@ angular.module('starter.controllers', [])
     console.log({file_name:$scope.file_name, mode:$scope.mode, ecs:ecs, lineno: line_no});
     socket.emit("execute", {file_name:$scope.file_name, mode:$scope.mode, ecs:ecs, lineno: line_no});
     $scope.lineno = 0;
+	document.getElementById("refintim").innerHTML = "EXECUTE";
     ////console.log({file_name:$scope.program.name, mode:$scope.program.mode, ecs:ecs});
   }
 
@@ -724,7 +772,7 @@ angular.module('starter.controllers', [])
     //console.log("Inside Stop Execution. Will stop executions now..");
     socket.emit("stop_execution", {"status":"stop"});
 	$rootScope.$broadcast('status', 'show');
-
+	document.getElementById("refintim").innerHTML = "STOP EXECUTE";
   }
 
 })
@@ -967,6 +1015,7 @@ angular.module('starter.controllers', [])
 
 .controller('programCtrl', function($scope, $http, $ionicModal, $state) {
   //$scope.array = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17];
+  socket.emit('get_file_cont',"123");
   $scope.array = [];
   $scope.file_contents = [];
   $scope.p= {code_area : ''};

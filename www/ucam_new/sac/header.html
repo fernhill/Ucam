@@ -1,0 +1,52 @@
+<script src="js/socket.io.js"></script>	
+	
+<div class="nav_menu" style="background-color: #393e5c;">
+				<nav>
+					<div class="col-sm-4">
+					  <img src="images/logo.png" style="width:120px;height:41px;margin-top:4px;margin-bottom:4px">
+					</div>
+					<div class="col-sm-4" style="margin-top:12px">
+					  <font color="white" size="3" ><b>SINGLE AXIS CONTROLLER</b></font>
+					</div>
+					<div class="col-sm-4">
+						<ul class="navbar-nav navbar-right">
+							
+							<!--<button class="btn btn-primary"   style="height:26%;margin-top:5px">HOME</button>-->
+							<font color="Red">MODE:</font><font color="white" size="2"><span id="screen"></span></font> </div>
+				        </ul>
+					</div>
+				</nav>
+					<script>
+					var host="192.168.202.1";
+					var socket = io.connect('http://'+host+':9090');					
+					socket.emit('readaxis',"");
+					socket.on('putaxis',function(message){
+					document.getElementById('axis').innerHTML=message;
+				    });
+					
+				    document.getElementById('screen').innerHTML=pagename;
+					var mode="";
+					var alarm_message="";
+					var ecs="";
+					var step_count="0";
+					var dir="";
+					var feed_rate="";
+					var line_no="-1";
+					var active="1";
+					var file_name="";
+					var sysdate = new Date().toISOString().slice(0,10);
+					var socket = io.connect('http://'+host+':9090');
+						socket.emit('getdeactivatedate',"");
+						socket.on('put_date',function(message3){
+							var d_date=message3;
+						
+							if(sysdate>d_date){
+								active = 0;
+							}
+						
+						});
+					//document.getElementById("lineno").innerHTML=" ";
+					document.getElementById("fname").innerHTML=" ";
+					</script>	
+						
+						

@@ -1,0 +1,1451 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>UCAM</title>
+
+	<!-- demo -->
+	<link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="../vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+	<link href="vkp/css/demo.css" rel="stylesheet">
+
+	
+	<!-- include -->
+
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+  
+	<!-- jQuery & jQuery UI + theme (required) -->
+	<link href="vkp/css/jquery-ui.min.css" rel="stylesheet">
+	<script src="vkp/js/jquery-latest.min.js"></script>
+	<script src="js/gauge.min.js"></script>
+	<script src="js/top.js"></script>
+	<script src="js/socket.io.js"></script>
+	
+	<!--<script src="vkp/js/bootstrap.min.js"></script>-->
+	
+		<!-- keyboard widget css & script (required) -->
+	<link rel="stylesheet" href="vkp//css/keyboard.css">
+	<link href="css/blurt.min.css" rel="stylesheet">
+	<script src="js/blurt.min.js"></script>
+	<script src="vkp//js/jquery.keyboard.js"></script>
+
+	<!-- keyboard extensions (optional) -->
+	<script src="vkp//js/jquery.mousewheel.js"></script>
+	<!--
+	<script src="../js/jquery.keyboard.extension-typing.js"></script>
+	<script src="../js/jquery.keyboard.extension-autocomplete.js"></script>
+	-->
+	<script src="vkp//js/jquery.keyboard.extension-navigation.js"></script>
+	<!-- initialize keyboard (required) -->
+	<style>
+
+	.tbbg {
+		background-image: url(images/444.jpg);
+		background-size: cover;
+	}
+	.btn1{/*dent around button*/
+		display: inline-block;
+		position: relative;
+		text-decoration: none;
+		color: rgba(3, 169, 244, 0.54);
+		width: 100px;
+		height: 100px;
+		border-radius: 50%;
+		text-align: center;
+		background: #f7f7f7;
+		box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.08);
+	}
+	.btn1 .fa {/*Button itself*/
+		position: absolute;
+		content: '';
+		width: 80px;
+		height: 80px;
+		line-height: 80px;
+		vertical-align: middle; 
+		left: 10px;
+		top: 9px;
+		border-radius: 50%;
+		font-size: 40px;
+		background-image: -webkit-linear-gradient(#e8e8e8 0%, #d6d6d6 100%);
+		background-image: linear-gradient(#e8e8e8 0%, #d6d6d6 100%);
+		text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.66);
+		box-shadow: inset 0 2px 0 rgba(255,255,255,0.5), 0 2px 2px rgba(0, 0, 0, 0.19);
+		border-bottom: solid 2px #b5b5b5;
+	  }
+	  
+	.btn1 .fa:active{
+		background-image: -webkit-linear-gradient(#efefef 0%, #d6d6d6 100%);
+		box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 2px 2px rgba(0, 0, 0, 0.19);
+		border-bottom: solid 2px #d8d8d8;
+	}
+	
+</style>
+<style>
+:focus{
+  outline:none;
+}
+.radio{
+  -webkit-appearance:button;
+  -moz-appearance:button;
+  appearance:button;
+  border:4px solid #ccc;
+  border-top-color:#bbb;
+  border-left-color:#bbb;
+  background:#fff;
+  width:300px;
+  height:30px;
+  border-radius:50%;
+}
+.radio:checked{
+  border:10px solid #4099ff;
+}
+
+</style>
+   
+	</head>
+	
+	<body>
+	<table width="800px" height="480px" border="1" align="center" class="tbbg">
+	<tr><td valign="top">
+<!-- top navigation -->
+<div id="header"></div>
+<div class="row top_tiles" style="margin-left:1px;margin-right:1px" >
+		<div class="row" id="menu">
+		
+	<center>
+	
+	<button class="btn btn-default" id="btnmanual" onclick="parent.window.location='manualv1.html?pagename=MANUAL'">MANUAL</button>
+	<button  class="btn btn-default" id="btnauto" onclick="window.location='autov1.html?pagename=AUTO'">AUTO</button>
+	<button class="btn btn-default"  id="btnprogram" onclick="window.location='programv1.html?pagename=PROGRAM'">EDIT</button>
+	<button class="btn btn-default"  id="btnsettings" onclick="parent.window.location='settingsv1.html?pagename=SETTINGS'">SETTINGS</button>
+	<button class="btn btn-primary"  onclick="reset()">RESET</button>
+	<!--<button class="btn btn-danger"  onclick="emergency()">EMERGENCY</button>-->
+	
+	</center>
+    <script>
+	
+	if(pagename=="MANUAL"){
+	
+		document.getElementById('btnmanual').className="btn btn-warning";
+	}
+	if(pagename=="PROGRAM"){
+		
+		document.getElementById('btnprogram').className="btn btn-warning";
+	}
+	if(pagename=="AUTO"){
+		
+		document.getElementById('btnauto').className="btn btn-warning";
+	}
+	if(pagename=="SETTINGS"){
+		
+		document.getElementById('btnsettings').className="btn btn-warning";
+	}
+	function reset(){
+	 socket.emit('reset',{'status':'clear'});
+	}
+	
+	function emergency(){
+	 socket.emit("emergency",{"status":'true'});
+	}
+	 </script>
+	 
+		</div>
+<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" id="positionA">
+
+<!--<link rel="stylesheet" media="screen" href="https://fontlibrary.org/face/segment7" type="text/css"/>-->
+<style>
+
+@font-face {
+    font-family: 'Segment7Standard';
+        src: url('../vendors/digital_num/Segment7Standard.otf') format('opentype');
+    font-weight: normal;
+    font-style: italic;
+      }
+
+ /* The following rules are deprecated. */ 
+
+@font-face {
+    font-family: 'Segment7';
+        src: url('../vendors/digital_num/Segment7Standard.otf') format('opentype');
+    font-weight: normal;
+    font-style: italic;
+      }
+	  
+	  
+
+</style>
+
+<script src="js/socket.io.js"></script>
+					<div class="tile-stats" style="height:85px;">
+					<div>
+					<table border="0" style="width:255px;table-layout:fixed">
+					<tr>
+					<td align="center" style="font-size:12px;height:30px;">&nbsp;&nbsp;&nbsp;ACTUAL POSITION</td>
+					<td align="left" style="font-size:12px;">&nbsp;&nbsp;&nbsp;DESTINATION </td>
+					</tr>
+					<tr>
+					<td class="count" style="font-size: 29px;"><font color="#35d12f" size="5" id="clr" style="font-size:27px; margin-right:5px; font-family: arial,helvetica,sans-serif;">A&nbsp;</font><span id="x_cur" style=""></span></td>
+					<td class="count"><font size="4">&nbsp;<span id="x_dest" style="font-size: 26px;" ></span></td>
+					</tr>
+					</table>
+					</div>
+				    </div>
+	
+<script>
+var dialflag = 1;
+var socket = io.connect('http://'+host+':9090');	
+//############### Checking program execution current line###########
+
+
+
+socket.emit('get_file_cont',"123");
+socket.on('sent_file_cont',function(content){
+	var file_name=content.split(":")[1];
+	var line_num=content.split(":")[3];
+	var setmode=1;
+	var ecs=0;
+	if(content==""){
+	
+	}else{
+		
+			var values = "";
+			socket.emit('filewriting',values);
+			window.location.href='http://'+host+':8082/ucam_new/sac/autov1.html?pagename=AUTO=fn='+file_name+'=t='+line_num;
+				
+		/*brompt('Program still running, do u want to countinue...', function(val){
+			
+			//alert(line_no);
+			//execute(line_no);
+			var values = "";
+			socket.emit('filewriting',values);
+			window.location.href='http://'+host+':8082/ucam_new/sac/autov1.html?pagename=AUTO=fn='+file_name+'=t='+line_num;
+			
+		},
+		function(){
+			var values = "";
+			//alert(values);
+			socket.emit('filewriting',values);
+			
+		});*/
+	}
+	
+	
+});
+//############### ends here ###########
+var pr=0,prev=0,inc=0;
+// socket.emit("destination_position1","123.123");
+socket.on("destination_position", function(data){
+    // console.log(data.pos);
+    var pos = data.pos;
+    if(pos === null || pos === undefined){
+      return;
+    }
+    if(Object.keys(data).length == 0){
+      return;
+    }
+    pos = Math.round(pos*10000)/10000;
+    var rnd = Math.round(pos);
+    if(Math.abs(rnd-pos) <= 0.001){
+       pos = rnd;
+    }
+    pos = pos % 360;
+    //console.log(Math.round(a));
+	// if(pos<0){
+	// 	pos = 360+pos;
+	// }
+    pos = parseFloat(pos).toFixed(3);
+    ////console.log(pos);
+    //code_content
+    //$(".code_content").scrollTop()
+    ////console.log(pos);
+    var t_obj = document.getElementById('x_cur');
+    var t1_obj = document.getElementById('x1_cur');
+	if(dialflag){
+		try {
+			pr = parseInt(pos.toString());
+			inc++;
+			
+			
+			if(inc==10){
+			if(pr==0){
+				
+				prev=0;
+			}
+			if(prev-pr>350){
+				pr=0;
+				prev=0;
+			}
+				document.gauges[0].value= pr;
+				inc=0;
+			}
+			prev = pr;
+			if(dialflag==1){
+				dialflag = 0;
+			}
+		}
+		catch(err) {
+			dialflag = 0;
+		}
+
+	}
+    ////console.log(t_obj);
+    t_obj.innerHTML = pos.toString();
+    if(t1_obj){
+      t1_obj.innerHTML = pos.toString();
+    }
+    //alert(pos.toString);
+    //t_obj.textContent = " "+pos+" ";
+    /*if(obj){
+      obj.innerHTML = pos;
+    }
+    $scope.x_cur = pos;*/
+  })
+
+
+//  emit("pos_data1","123.123");
+socket.on('pos_data', function(data){
+		//console.log("Position Data",data);
+		var d = data.split(".");
+		if(d.length > 2){
+		  data = d[0]+"."+d[1];
+		}
+		var pos = data.pos;
+		pos = Math.round(pos*10000)/10000;
+		pos = parseFloat(pos).toFixed(3);
+		//console.log(pos);
+		var obj = document.getElementById('x_dest');
+		var obj1 = document.getElementById('x1_dest');
+		if(obj){
+		  obj.innerHTML = pos;
+		 
+		}
+		if(obj1){
+		  obj1.innerHTML = pos;
+		}
+	  });
+</script>	  	
+	 
+			
+
+</div>
+<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" id="positionB">
+
+<!-- <link rel="stylesheet" media="screen" href="https://fontlibrary.org/face/segment7" type="text/css"/> -->
+<style>
+
+@font-face {
+    font-family: 'Segment7Standard';
+        src: url('../vendors/digital_num/Segment7Standard.otf') format('opentype');
+    font-weight: normal;
+    font-style: italic;
+      }
+
+ /* The following rules are deprecated. */ 
+
+@font-face {
+    font-family: 'Segment7';
+        src: url('../vendors/digital_num/Segment7Standard.otf') format('opentype');
+    font-weight: normal;
+    font-style: italic;
+      }
+	
+</style>
+		       
+			<div class="tile-stats" style="height:85px;">
+							
+			<div>
+							
+			<table border="0" style="width:255px;table-layout:fixed">
+				<tr>
+				<td align="center" style="font-size:12px;height:30px;">&nbsp;&nbsp;&nbsp;ACTUAL POSITION</td>
+				<td align="left" style="font-size:12px;">&nbsp;&nbsp;&nbsp;DESTINATION </td>
+				</tr>
+				<tr>
+				<td class="count" style="font-size: 29px;"><font color="#7e7e7e" size="5" id="clr2" style="font-size:27px; margin-right:5px; font-family: arial,helvetica,sans-serif;" >B&nbsp;</font><span id="x1_cur"></span></td>
+				<td class="count"><font size="4">&nbsp;<span id="x1_dest" style="font-size: 26px;"></span></td>
+					</tr>				
+				</table>
+								
+				</div>
+				</div>
+				
+				
+				
+		
+			
+
+</div> 
+<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" id="fault">
+<script src="js/socket.io.js"></script>
+<style>
+body {font-family: Arial, Helvetica, sans-serif;}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  -webkit-animation-name: fadeIn; /* Fade in the background */
+  -webkit-animation-duration: 0.4s;
+  animation-name: fadeIn;
+  animation-duration: 0.4s
+}
+
+/* Modal Content */
+.modal-content {
+  position: fixed;
+  bottom: 0;
+  background-color: ;
+  width: 100%;
+  -webkit-animation-name: slideIn;
+  -webkit-animation-duration: 0.4s;
+  animation-name: slideIn;
+  animation-duration: 0.4s
+}
+
+/* The Close Button */
+.close {
+  color: black;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.modal-header1 {
+  padding: 2px 16px;
+  background-color: #5cb85c;
+  color: white;
+}
+
+.modal-body {padding: 2px 16px;
+ background-color: white;
+  color: black;}
+
+.modal-footer {
+  padding: 2px 16px;
+  background-color: #5cb85c;
+  color: white;
+}
+
+
+.modal1 {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  -webkit-animation-name: fadeIn; /* Fade in the background */
+  -webkit-animation-duration: 0.4s;
+  animation-name: fadeIn;
+  animation-duration: 0.4s
+}
+
+/* Modal Content */
+.modal-content {
+  position: fixed;
+  bottom: 0;
+  background-color: ;
+  width: 100%;
+  -webkit-animation-name: slideIn;
+  -webkit-animation-duration: 0.4s;
+  animation-name: slideIn;
+  animation-duration: 0.4s
+}
+
+/* The Close1 Button */
+.close1 {
+  color: black;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close1:hover,
+.close1:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.modal-header1 {
+  padding: 2px 16px;
+  background-color: #5cb85c;
+  color: white;
+}
+
+.modal-body {padding: 2px 16px;
+ background-color: white;
+  color: black;}
+
+.modal-footer {
+  padding: 2px 16px;
+  background-color: #5cb85c;
+  color: white;
+}
+
+/* Add Animation */
+@-webkit-keyframes slideIn {
+  from {bottom: -300px; opacity: 0} 
+  to {bottom: 0; opacity: 1}
+}
+
+@keyframes slideIn {
+  from {bottom: -300px; opacity: 0}
+  to {bottom: 0; opacity: 1}
+}
+
+@-webkit-keyframes fadeIn {
+  from {opacity: 0} 
+  to {opacity: 1}
+}
+
+@keyframes fadeIn {
+  from {opacity: 0} 
+  to {opacity: 1}
+}
+</style>
+<style>
+.container1 {
+	background-size: cover;
+  background: rgb(226,226,226); /* Old browsers */
+  background: -moz-linear-gradient(top,  rgba(226,226,226,1) 0%, rgba(219,219,219,1) 50%, rgba(209,209,209,1) 51%, rgba(254,254,254,1) 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(226,226,226,1)), color-stop(50%,rgba(219,219,219,1)), color-stop(51%,rgba(209,209,209,1)), color-stop(100%,rgba(254,254,254,1))); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top,  rgba(226,226,226,1) 0%,rgba(219,219,219,1) 50%,rgba(209,209,209,1) 51%,rgba(254,254,254,1) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top,  rgba(226,226,226,1) 0%,rgba(219,219,219,1) 50%,rgba(209,209,209,1) 51%,rgba(254,254,254,1) 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top,  rgba(226,226,226,1) 0%,rgba(219,219,219,1) 50%,rgba(209,209,209,1) 51%,rgba(254,254,254,1) 100%); /* IE10+ */
+  background: linear-gradient(to bottom,  rgba(226,226,226,1) 0%,rgba(219,219,219,1) 50%,rgba(209,209,209,1) 51%,rgba(254,254,254,1) 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e2e2e2', endColorstr='#fefefe',GradientType=0 ); /* IE6-9 */
+  padding: 20px;
+}
+
+.led-box {
+  height: 30px;
+  width: 25%;
+  margin: 10px 0;
+  float: left;
+}
+
+.led-box p {
+  font-size: 12px;
+  text-align: center;
+  margin: 1em;
+}
+
+
+.led-red {
+  margin: 0 auto;
+  width: 40px;
+  height: 40px;
+  background-color: #35d12f;
+  border-radius: 50%;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #304701 0 -1px 9px, #89FF00 0 2px 12px;
+}
+
+
+.led-yellow {
+  margin: 0 auto;
+  width: 24px;
+  height: 24px;
+  background-color: #FF0;
+  border-radius: 50%;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #808002 0 -1px 9px, #FF0 0 2px 12px;
+  -webkit-animation: blinkYellow 1s infinite;
+  -moz-animation: blinkYellow 1s infinite;
+  -ms-animation: blinkYellow 1s infinite;
+  -o-animation: blinkYellow 1s infinite;
+  animation: blinkYellow 1s infinite;
+}
+
+@-webkit-keyframes blinkYellow {
+    from { background-color: #FF0; }
+    50% { background-color: #AA0; box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #808002 0 -1px 9px, #FF0 0 2px 0; }
+    to { background-color: #FF0; }
+}
+@-moz-keyframes blinkYellow {
+    from { background-color: #FF0; }
+    50% { background-color: #AA0; box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #808002 0 -1px 9px, #FF0 0 2px 0; }
+    to { background-color: #FF0; }
+}
+@-ms-keyframes blinkYellow {
+    from { background-color: #FF0; }
+    50% { background-color: #AA0; box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #808002 0 -1px 9px, #FF0 0 2px 0; }
+    to { background-color: #FF0; }
+}
+@-o-keyframes blinkYellow {
+    from { background-color: #FF0; }
+    50% { background-color: #AA0; box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #808002 0 -1px 9px, #FF0 0 2px 0; }
+    to { background-color: #FF0; }
+}
+@keyframes blinkYellow {
+    from { background-color: #FF0; }
+    50% { background-color: #AA0; box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #808002 0 -1px 9px, #FF0 0 2px 0; }
+    to { background-color: #FF0; }
+}
+
+.led-green {
+  margin: 0 auto;
+  width: 40px;
+  height: 40px;
+  background-color: #35d12f;
+  border-radius: 50%;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #304701 0 -1px 9px, #89FF00 0 2px 12px;
+}
+
+.led-blue {
+  margin: 0 auto;
+  width: 24px;
+  height: 24px;
+  background-color: #24E0FF;
+  border-radius: 50%;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #006 0 -1px 9px, #3F8CFF 0 2px 14px;
+}
+
+</style>
+<div class="tile-stats" style="height:85px">
+<div>
+	<table>
+		<tr>
+			<td align="center" style="font-size:12px;height:30px">&nbsp;FAULT</td>
+			<td align="left" style="font-size:12px;">&nbsp;&nbsp;STATUS </td>
+			<td align="left" style="font-size:12px;">&nbsp;&nbsp;&nbsp;COMM </td>
+			<td align="left" style="font-size:12px;">&nbsp;&nbsp;&nbsp;HEALTH </td>
+			
+		</tr>
+		<tr>
+			<td><div class="led-red"  id="myBtn" style="margin-left:5px;"></div></td>
+			<td><div class="led-green" id="myBtn1" style="margin-left:12px;"></div> </td>
+			<td><div class="led-green" id="ethercatbtn" style="margin-left:22px;"></div> </td>
+			<td><div class="led-green" style="margin-left:14px;"></div> </td>
+		</tr>
+	</table>
+	
+</div>
+</div>
+
+<!-- Trigger/Open The Modal
+<button id="myBtn">Open Modal</button> -->
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">	
+    <div class="modal-header">
+      <span class="close">&times;</span>
+      <h2>ALARM STATUS</h2>
+    </div>
+    <div class="modal-body" id="messagedisplay" style="background-color:#05111b;color:white">
+     
+      <!--<p>Some other text...</p>
+	  <p>Some other text...</p>
+	  <p>Some other text...</p>
+	  <p>Some other text...</p>
+	  <p>Some other text...</p>
+	  <p>Some other text...</p> -->
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<div id="myModal1" class="modal1">
+
+  <!-- Modal content -->
+  <div class="modal-content">	
+    <div class="modal-header">
+      <span class="close1">&times;</span>
+      <h2>IO STATUS</h2>
+    </div>
+    <div class="col-md-12 modal-body" style="background-color:#05111b;color:white">
+      <div class="col-md-1">
+		<div style=" display: inline-block;">ECS</div>
+	  </div>
+	  <div class="col-md-1">
+     <div style="display: inline-block;">FIN</div>
+	 </div>
+	  <div class="col-md-1">
+	 <div style="display: inline-block;">SOL O/P</div>
+	 </div>
+	  <div class="col-md-1">
+     <div style="display: inline-block;">&nbsp;&nbsp;&nbsp;&nbsp;CL</div>
+	 </div>
+	  <div class="col-md-1">
+	 <div style="display: inline-block;">&nbsp;&nbsp;DCL</div>
+	 </div>
+	  <div class="col-md-1">
+	 <div style="display: inline-block;">ALM-IN</div> 
+	 </div>
+	  <div class="col-md-1">
+	 <div style="display: inline-block;">ALM-OUT</div>
+	 </div>
+	  <div class="col-md-1">
+	 <div style="display: inline-block;">&nbsp;HOME</div>
+	 </div>
+	  <div class="col-md-1">
+	 <div style="display: inline-block;">&nbsp;&nbsp;POT</div>
+	 </div>
+	  <div class="col-md-1">
+	 <div style="display: inline-block;">&nbsp;NOT</div>
+	 </div>
+	 <div class="col-md-1">
+	&nbsp;
+	 </div>
+	 <div class="col-md-1">
+	 &nbsp;
+	 </div>
+	 <div class="col-md-1">
+	 &nbsp;
+	 </div>
+	 <div class="col-md-1">
+	&nbsp;
+	 </div>
+	 <div class="col-md-1">
+	&nbsp;
+	 </div>
+	 <div class="col-md-1">
+	&nbsp;
+	 </div>
+	</div>
+     <div class="row" style="background-color:#05111b;color:white">
+      <div class="col-md-1">
+	    <img menu-toggle="left" src="images/off.png" id="img1"style="height:12px; margin-left:25px;">  </div>
+	  <div class="col-md-1">
+        <img menu-toggle="left" src="images/off.png" id="img2"style="height:12px; margin-left:30px;">	</div>
+	  <div class="col-md-1">
+		<img menu-toggle="left" src="images/off.png" id="img3" style="height:12px; margin-left:30px;">	 </div>
+	  <div class="col-md-1">
+		<img menu-toggle="left" src="images/off.png" id="img4" style="height:12px; margin-left:40px;">	 </div>
+	  <div class="col-md-1">
+		<img menu-toggle="left" src="images/off.png" id="img5" style="height:12px; margin-left:25px;">	 </div>
+	  <div class="col-md-1">
+		<img menu-toggle="left" src="images/off.png" id="img6" style="height:12px; margin-left:25px;">	 </div>
+	  <div class="col-md-1">
+		<img menu-toggle="left" src="images/off.png" id="img7" style="height:12px; margin-left:44px;">	 </div>
+	  <div class="col-md-1">
+		<img menu-toggle="left" src="images/off.png" id="img8" style="height:12px; margin-left:50px;">	 </div>
+	  <div class="col-md-1">
+		<img menu-toggle="left" src="images/off.png" id="img9" style="height:12px; margin-left:35px;">	 </div>
+	  <div class="col-md-1">
+		<img menu-toggle="left" src="images/off.png" id="img10" style="height:12px; margin-left:20px;">	 </div>
+	 <div class="col-md-1">
+	 &nbsp;
+	 </div>
+	 <div class="col-md-1">
+	 &nbsp;
+	 </div>
+	 <div class="col-md-1">
+	&nbsp;
+	 </div>
+	 <div class="col-md-1">
+	&nbsp;
+	 </div>
+	</div>
+   
+    
+
+</div>
+</div>
+
+<script>
+
+	//var socket = io.connect('http://'+host+':9090');
+	// socket.emit("alarms1","haii");
+
+	socket.on("alarms", function(message){
+	var r = message.split(" ");
+	if((r[1][2] == 1)
+	 {
+	 document.getElementById("img8").src ="images/on.png";
+	 }
+	 else
+	 {
+	 document.getElementById("img8").src ="images/off.png";
+	 }
+	 
+	 if((r[1][3] == 1)
+	 {
+	 document.getElementById("img1").src ="images/on.png";
+	 }
+	 else
+	 {
+	 document.getElementById("img1").src ="images/off.png";
+	 }
+	 
+	 if((r[1][4] == 1)
+	 {
+	 document.getElementById("img4").src ="images/on.png";
+	 }
+	 else
+	 {
+	 document.getElementById("img4").src ="images/off.png";
+	 }
+	 
+	 if((r[1][5] == 1)
+	 {
+	 document.getElementById("img5").src ="images/on.png";
+	 }
+	 else
+	 {
+	 document.getElementById("img5").src ="images/off.png";
+	 }
+	 
+	 if((r[1][1] == 1)
+	 {
+	 document.getElementById("img10").src ="images/on.png";
+	 }
+	 else
+	 {
+	 document.getElementById("img10").src ="images/off.png";
+	 }
+	 
+	 if((r[1][0] == 1)
+	 {
+	 document.getElementById("img9").src ="images/on.png";
+	 }
+	 else
+	 {
+	 document.getElementById("img9").src ="images/off.png";
+	 }
+	 
+	 if((r[1][1] == 1)
+	 {
+	  document.getElementById("img6").src ="images/on.png";
+	  var ob2=document.getElementById("myBtn");
+	  ob2.style.backgroundColor= "#FF0000";
+	  document.getElementById("messagedisplay").inneHTML = "NOT Limit Exceeded - Hard Limit"
+	 }
+	 
+	 if(r[1][0] == 1)
+	 {
+	  document.getElementById("img6").src ="images/on.png";
+	  var ob2=document.getElementById("myBtn");
+	  ob2.style.backgroundColor= "#FF0000";
+	   document.getElementById("messagedisplay").inneHTML = "POT Limit Exceeded - Hard Limit"
+	 }
+	  
+	  
+	  
+		////console.log("Alarm Data", message);
+		/*var r = message.split(" ");
+		$scope.$apply(function(){
+		  $scope.home = (r[1][2] == 1) ? "images/on.png" : "images/off.png";
+		  $scope.ecs = (r[1][3] == 1) ? "images/on.png" : "images/off.png";
+		  $scope.cl = (r[1][4] == 1) ? "images/on.png" : "images/off.png";
+		  $scope.dcl = (r[1][5] == 1) ? "images/on.png" : "images/off.png";
+		  $scope.not = (r[1][1] == 1) ? "images/on.png" : "images/off.png";
+		  $scope.pot = (r[1][0] == 1) ? "images/on.png" : "images/off.png";
+
+		  if(r[1][1] == 1){
+			  $scope.almin = "./images/on.png";
+			  $scope.fault_img = "./images/red_l.png";
+			  $scope.alarm_message = "NOT Limit Exceeded - Hard Limit"
+		  }
+		  if(r[1][0] == 1){
+			  $scope.almin = "./images/on.png";
+			  $scope.fault_img = "./images/red_l.png";
+			  $scope.alarm_message = "POT Limit Exceeded - Hard Limit"
+		  }
+
+		})*/
+		/*for(var j=0;j<r[1].length;j++){
+		  var d = document.getElementById('alarm_x_'+j);
+		  if(d){
+			d.style.backgroundColor = (r[1][j] == 1) ? "red" : "green";
+		  }
+		}*/
+	  });
+ 
+  // socket.emit("alarm_error1","helloo");
+  socket.on("alarm_error", function(message){
+
+    if((message.startsWith("No Alarms"))){
+       document.getElementById("img6").src ="images/off.png";
+	   var ob2=document.getElementById("myBtn");
+       ob2.style.backgroundColor= "#35d12f";
+      // $scope.fault_img = "./images/green_l.png";
+    }
+    else{
+      document.getElementById("img6").src ="images/on.png";
+	   var ob2=document.getElementById("myBtn");
+       ob2.style.backgroundColor= "#FF0000";
+      // $scope.fault_img = "./images/red_l.png";
+    }
+
+    document.getElementById("messagedisplay").innerHTML = message;
+
+  });
+  
+ //  socket.emit("FINSIGNAL1","haihello");
+  socket.on("FINSIGNAL",function(){
+    document.getElementById("img2").src ="images/on.png";
+    //console.log("FINSIGNAL RECEIVED");
+  });
+  
+  
+  socket.on("ETH_DOWN", function(data){
+     // console.log("Ethercat Down");
+		 document.getElementById("img6").src ="images/on.png";
+		 var ob2=document.getElementById("myBtn");
+         ob2.style.backgroundColor= "#FF0000";
+		 document.getElementById("messagedisplay").innerHTML = "Communication down. Please check connection and restart";
+     // alert("Ethercat Down");
+  });
+
+  socket.on("ETH_UP", function(data){
+     // console.log("Ethercat Up");
+		 document.getElementById("img6").src ="images/off.png";
+         var ob2=document.getElementById("myBtn");
+         ob2.style.backgroundColor= "#35d12f";		
+	     document.getElementById("messagedisplay").innerHTML = "Communication link is up..";
+     // alert("Ethercat Up");
+  });
+</script>
+
+<script>
+
+ 
+ 
+// Get the modal
+var modal = document.getElementById('myModal');
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal 
+btn.onclick = function() {
+ var ob2=document.getElementById("myBtn");
+ //ob2.style.backgroundColor= "#FF0000";
+ modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+</script>
+
+
+
+<script>
+
+ 
+ 
+// Get the modal
+var modal1 = document.getElementById('myModal1');
+
+// Get the button that opens the modal
+var btn1 = document.getElementById("myBtn1");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close1")[0];
+
+// When the user clicks the button, open the modal 
+btn1.onclick = function() {
+ modal1.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal1.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal1) {
+    modal1.style.display = "none";
+  }
+}
+</script>
+</div>
+
+</div>
+
+
+ <script>
+	function restrat(){
+		brompt('Are you sure want to Reset ..!', function(){
+			window.location="";
+		});
+	}
+	function emergency(){
+		brompt('Emergency Continue ..!', function(){
+			window.location="";
+		});
+	}
+	
+	/*var socket = io.connect('http://'+host+':9090');
+	
+	socket.emit('getFiles', "");
+	
+	socket.on('Files', function (message) {
+        // The username of the person who clicked is retrieved from the session variables
+       
+	   $("#prmdiv").html(message);
+	   */
+		
+    });
+</script>
+
+
+
+
+
+ <div class="container body">
+      <div class="main_container">
+		<!-- top navigation 
+		<iframe src="top.html?p=Manual" height="200px" width="100%" frameBorder="0" scrolling="no" id="top" onload="settitle(this)"></iframe>
+         /top navigation -->
+		<div class="x_content11">
+			<div>
+				
+				
+				<div class="row" style="margin-left:3px;margin-right:3px;">
+					<div class="col-md-7">
+					<div class="row"> 
+					&nbsp;PROGRAM:<span style="color: white" id="fname">{{file_name}}</span>
+			  <span style="color: white; margin-left:250px">Line No: <span style="color:white" id="lineno"></span>
+              
+          </div><!-- top navigation <textarea class="form-control" id="prms" rows="10" cols="100" style="overflow-y: scroll; background-color: rgba(0,0,0,0.4);color:white;" readonly></textarea><br/> /top navigation -->
+					<div class="tile-stats" style="height:240px;">
+					<div  id="divid" class="code_content list" style="flex-basis: 100%; font-size:3px; width:440px; height: 100%; overflow-y: scroll; background-color:#423e3e;">
+						
+					</div>
+					</div>
+					
+					</div>
+					<div class="col-md-5">
+					<br/>
+						<div>	
+							<button class="btn btn-primary"  style="width:142px;height:55px;background-color: rgba(51, 122, 183,0.4);" onclick="select_prog()"><b>SELECT PROG</b></button>
+							<span id="clr1">
+							<button class="btn btn-primary"  style="height:55px;width:142px;background-color: rgba(51, 122, 183,0.4);" id="clear_button" onclick="clear1()" > <b>CLEAR</b></button>
+							<!--<button class="btn btn-primary"  style="height:55px;background-color: rgba(51, 122, 183,0.4);" id="next_button" onclick="execNextLine()" > <b>NEXT BLOCK</b></button>--></span>
+							<br/><br/>
+							<table width="100%" id="rd">
+							<tr>
+							<td><input type="radio" class="radio" name="test"  id="test" value="0" onclick="setPgmMode('s')" style="width:30px" ></td>
+							<td><b>&nbsp;SINGLE BLOCK</b></td>
+							<td><input type="radio" class="radio" name="test" id="test1" value="1" onclick="setPgmMode('c')" style="width:30px" ></td>
+							<td><b>&nbsp;CONTINUOUS</b></td>
+							</tr>
+							</table>
+							<br/>
+							<div id="sl_ex_st">
+							<button class="btn btn-primary" id="exec" style="width:142px;height:55px;background-color: rgba(51, 122, 183,0.4);" onclick="execute(0)"><b>EXECUTE</b></button>
+							<button class="btn btn-warning" style="width:126px;height:55px;background-color: rgba(240, 173, 78,0.4);" id="stp" onclick="stop_program()"><b>STOP</b></button>
+							</div>
+							
+						</div>
+					</div>                            
+										
+				</div>	 
+			</div>
+						
+		</div>
+    </div>
+     
+
+</div>
+
+
+
+
+  <script>
+  
+	document.getElementById("rd").style.visibility = 'hidden';
+	//document.getElementById("next_button").style.visibility = 'hidden';
+	document.getElementById("sl_ex_st").style.visibility = 'hidden';
+	
+	//document.getElementById("cont_ex_stop").style.visibility = 'hidden';
+//var socket = io.connect('http://'+host+':9090');			 
+	var url = window.location.search;
+    var ht="";					 
+	var pagename = url.split("=")[1]; 
+	var fn = url.split("=")[3];
+	var linenum=url.split("=")[5];
+	//alert("666666666666666666666666666"+linenum);
+	//var pagename=pname.split(",")[0];
+	//var type=pname.split(",")[2];
+	
+	
+	
+	//var file=url.split(",")[1];
+	if(linenum !='' && linenum !== undefined){
+		//alert("aaaaaaaaaaaaaa");
+		//abc(66);
+		
+		var obj2 = document.getElementById("lineno");
+		obj2.innerHTML = linenum;
+		
+		//var obj = document.getElementById("num"+linenum);
+		//obj.style.background = "rgba(45, 204, 112, 0.52)";
+		document.getElementById("rd").style.visibility = 'visible';
+		document.getElementById("test1").click()
+		document.getElementById("sl_ex_st").style.visibility = 'visible';
+		//document.getElementById("clr1").innerHTML='<button class="btn btn-primary"  style="height:55px;width:142px;background-color: rgba(51, 122, 183,0.4);" id="clear_button" onclick="clear1()"> <b>CLEAR</b></button>';
+		//execute(linenum);
+		//socket.emit("execute", {file_name:file_name, mode:1, ecs:0, lineno: linenum});
+		
+		//document.getElementById('exec').style.background = "rgba(45, 204, 112, 0.52)";
+	}
+	
+	
+	
+	
+	
+	
+	socket.emit('readFile1', fn);
+	socket.on('Filecontent1',function(message5){
+	
+	var lines = message5.split('\n');
+    for(var line = 0; line < lines.length; line++){
+      ht = ht + "<div class='prln' id='num"+(line+1)+"' >"+lines[line]+"</div>";
+	  
+    }       
+	//alert(ht);
+	
+	document.getElementById("fname").innerHTML= fn;
+	document.getElementById('divid').innerHTML = ht;		
+	//document.getElementById('prms').value=message5;
+		//ht = "<div>"+message5+"</div>";
+	 
+	document.getElementById("rd").style.visibility = 'visible';						
+	});
+	
+	
+	 
+	
+	function stop_program(){
+			$('button').prop('disabled', false);
+			document.getElementById("test").disabled=false;
+			document.getElementById("test1").disabled=false;
+		if(active==0)
+		{
+			blurt('Application Expired. Please Activate');
+		}
+		else
+		{ 
+			//var socket = io.connect('http://'+host+':9090');
+			/*socket.emit("line",{"line": "16"});
+			socket.on("line_number", function(data){
+				//console.log("Line Number details --> ");
+				//console.log(data);
+				var ln = parseInt(data.line);
+				$('.code_content').animate({scrollTop: 10*ln}, 20);
+				var obj = document.getElementById("num"+ln);
+				var prev_line = -1;
+				if(prev_line >=0){
+				  //console.log("Obtained prev_line "+prev_line);
+				  var tmp_obj = document.getElementById("num"+prev_line);
+				  tmp_obj.style.background = "#1f233a";
+				}
+				if(obj){
+				  obj.style.background = "rgba(45, 204, 112, 0.52)";
+				}
+				var obj2 = document.getElementById("lineno");
+				obj2.innerHTML = ln;
+				lineno=ln;
+				prev_line = ln;
+			});*/
+			//brompt('Are you sure want to stop..!', function(){
+				//window.location="";
+				socket.emit("stop_execution", {"status":"stop"});
+				//socket.emit('status', 'show');
+			//});
+			
+			document.getElementById('exec').style.background = "rgba(51, 122, 183, 0.4)";
+		}
+	}
+	function setPgmMode(mode){
+	
+	
+			if(active==0)
+		{
+			blurt('Application Expired. Please Activate');
+		}
+		else
+		{
+			
+			//console.log("Inside Set P");
+			if(mode == "s"){
+			//document.getElementById("next_button").style.visibility = 'visible';
+			  document.getElementById("sl_ex_st").style.visibility = 'visible';
+			  //document.getElementById("clr1").innerHTML='<button class="btn btn-primary"  style="height:55px;width:142px;background-color: rgba(51, 122, 183,0.4);" id="next_button" onclick="execNextLine()" > <b>NEXT BLOCK</b></button>';
+			  //document.getElementById("cont_ex_stop").style.visibility = 'hidden';
+			  ecs=1;
+			  //console.log("Setting ecs to high: "+ecs);
+			  //console.log("Entered Single block");
+			 mode="0";
+			  s_mode_button = "mode_button_active";
+			 c_mode_button = "mode_button";
+			  socket.emit("set_program_mode", {mode:"single"});
+			}
+			else{
+			  ecs = 0;
+			  //console.log("Setting ecs to low: "+ecs);
+			  //document.getElementById("next_button").style.visibility = 'hidden';
+			  document.getElementById("sl_ex_st").style.visibility = 'visible';
+			 //document.getElementById("clr1").innerHTML='<button class="btn btn-primary"  style="height:55px;width:142px;background-color: rgba(51, 122, 183,0.4);" id="clear_button" onclick="clear1()" > <b>CLEAR</b></button>';
+			  //document.getElementById("cont_ex_stop").style.visibility = 'visible';
+			  //console.log("Entered Continuous block");
+			 mode="1";
+			  s_mode_button = "mode_button";
+			  c_mode_button = "mode_button_active";
+			  socket.emit("set_program_mode", {mode:"continuous"})
+			}
+			/*brompt('Are you sure want to stop..!', function(){
+				window.location="";
+			});*/
+			/*
+			 document.getElementById("next_button").style.visibility = 'visible';
+			 socket.emit('ecs',"");
+			 socket.on('ecsprint',function(message8){
+			 var jsobj = JSON.parse(message8);
+			 jsobj.X.ecs = 0;
+			 var message3 = JSON.stringify(jsobj);
+			 
+			 });
+			 socket.emit('writeecs',"");
+			 socket.on('finishsaved',function(message3){
+			 }); */
+		}
+	}
+		function execNextLine(){
+			
+		if(active==0)
+		{
+			blurt('Application Expired. Please Activate');
+		}
+		else
+		{   
+			var currentline=parseInt(document.getElementById('lineno').innerHTML);
+			var lnum=currentline+1;
+			
+		   // var socket = io.connect('http://'+host+':9090');
+		    currentline++;
+            socket.emit("line",{"line": currentline });
+			socket.on("line_number", function(data){
+			//console.log("Line Number details --> ");
+			//console.log(data);
+			var ln = parseInt(data.line);
+		    $('.code_content').animate({scrollTop: 13*ln}, 20);
+			var obj = document.getElementById("num"+ln);
+			var prev_line = -1;
+			
+			  //console.log("Obtained prev_line "+prev_line);
+			  var tmp_obj = document.getElementById("num"+lnum);
+			  tmp_obj.style.background = "transparent";
+			
+			if(obj){
+			  obj.style.background = "rgba(45, 204, 112, 0.52)";
+			}
+			var obj2 = document.getElementById("lineno");
+			obj2.innerHTML = ln;
+			prev_line = ln;
+		    });
+		    
+		   socket.emit("exec_next_line", {"status":"1"});
+		   //execute(currentline);
+			/*brompt('Are you sure want to stop..!', function(){
+				window.location="";
+			});*/
+		}
+	}
+		function select_prog(){
+			
+		if(active==0)
+		{
+			blurt('Application Expired. Please Activate');
+		}
+		else
+		{
+
+			window.location="programv1run.html?pagename=PROGRAM";
+		}
+	}
+		function execute(pline_no){
+		
+
+			$('button').prop('disabled', true);
+			document.getElementById("stp").disabled=false;
+			document.getElementById("stp").disabled=false;
+			document.getElementById("exec").disabled=false;
+			
+			document.getElementById("test").disabled=true;
+			document.getElementById("test1").disabled=true;
+			
+			document.getElementById('exec').style.background = "rgba(45, 204, 112, 0.52)";
+			/*brompt('Are you sure want to stop..!', function(){
+				window.location="";
+			});*/
+			
+			//var socket = io.connect('http://'+host+':9090');
+			
+			//**********************line number***************
+			var line_no = 0;
+			var prev_line = -1;
+			socket.on("line_number", function(data){
+			var ln = parseInt(data.line)+1;
+			
+			
+			$('.code_content').animate({scrollTop: 10*ln}, 20);
+			var obj = document.getElementById("num"+(ln));
+			
+			if(prev_line >=0){
+			  //console.log("Obtained prev_line "+prev_line);
+			  
+			  var tmp_obj = document.getElementById("num"+(prev_line));
+			  
+			  tmp_obj.style.background = "transparent";
+			}
+			if(obj){
+			  obj.style.background = "rgba(45, 204, 112, 0.52)";
+			}
+			var obj2 = document.getElementById("lineno");
+			obj2.innerHTML = ln;
+			line_no=ln;
+			prev_line = ln;
+			var values = 'name:'+fn+':lineno:'+ln;
+			//alert(values);
+			socket.emit('filewriting',values);
+			
+		});
+			
+			//alert("eeeeeeeeeee");
+			var file_name=fn;
+
+			if (document.getElementById("test").checked)
+			  setmode = document.getElementById("test").value;
+
+			else if(document.getElementById("test1").checked)
+			  setmode = document.getElementById("test1").value;
+			 var obj2 = document.getElementById("lineno");
+			line_no = obj2.innerHTML.trim();
+			;
+				if(line_no==""){
+					//alert("ddddd");
+					line_no = pline_no;
+				}
+					
+					//alert(line_no);
+					socket.emit("execute", {file_name:file_name, mode:1, ecs:0, lineno: line_no});
+					lineno = 0;
+				
+			
+		
+	}
+		
+		function continuous(){
+			
+		if(active==0)
+		{
+			blurt('Application Expired. Please Activate');
+		}
+		else
+		{
+            
+			/*brompt('Are you sure want to stop..!', function(){
+				window.location="";
+			});*/
+		}
+	}
+	function clear1(){
+		var values = "";
+		socket.emit('filewriting',values);
+		document.getElementById("lineno").innerHTML=" ";
+		var obj = document.getElementsByClassName("prln");
+		
+		for(i=0;i<obj.length;i++){
+			
+			obj[i].style.background = "transparent";
+		}
+			 
+	
+	}
+	
+	
+	
+	
+	</script>
+	<script>
+	/*$(function(){
+		$('#prms').keyboard({
+		usePreview: true, // disabled for contenteditable
+		useCombos: false,
+		autoAccept: true,
+		layout: 'custom',
+		customLayout: {
+			'normal': [
+				'1 2 3 4 5 6 7 8 9 0 {del} {b}',
+				'Q W E R T Y U I O P',
+				'A S D F G H J K L {enter}',
+				'Z X C V B N M .',
+				'{cancel} {left} {right} {accept}'
+			],
+		},
+		display: {
+			del: 'Delete',
+			redo: '↻',
+			undo: '↺'
+		}
+	})
+	.addTyping();
+		
+});*/
+
+
+	}
+	
+    </script>
+	
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+  
+
+    
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+	</div>
+		</td>
+</tr>
+</table>
+</body>
+</html>

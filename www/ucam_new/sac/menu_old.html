@@ -1,0 +1,21 @@
+
+	<center>
+	
+	<button class="btn btn-default" onclick="parent.window.location='manualv1.html?pagename=MANUAL'">MANUAL</button>
+	<button class="btn btn-default"  onclick="window.location='programv1.html?pagename=PROGRAM'">PROGRAM</button>
+	<button  class="btn btn-default" onclick="window.location='autov1.html?pagename=AUTO'">AUTO</button>
+	<button class="btn btn-default"   onclick="parent.window.location='settingsv1.html?pagename=SETTINGS'">SETTINGS</button>
+	<button class="btn btn-primary"  onclick="reset()">RESET</button>
+	<button class="btn btn-danger"  onclick="emergency()">EMERGENCY</button>
+	
+	</center>
+    <script>
+	function reset(){
+	 socket.emit('reset',{'status':'clear'});
+	}
+	
+	function emergency(){
+	 socket.emit("emergency",{"status":'true'});
+	}
+	 </script>
+	 

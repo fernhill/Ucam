@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>UCAM</title>
+
+	<!-- demo -->
+	<link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="../vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+	<link href="vkp/css/demo.css" rel="stylesheet">
+
+	
+	<!-- include -->
+
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+  
+	<!-- jQuery & jQuery UI + theme (required) -->
+	<link href="vkp/css/jquery-ui.min.css" rel="stylesheet">
+	<script src="vkp/js/jquery-latest.min.js"></script>
+	<script src="js/gauge.min.js"></script>
+	 <script src="js/socket.io.js"></script>
+	
+	<!--<script src="vkp/js/bootstrap.min.js"></script>-->
+	
+		<!-- keyboard widget css & script (required) -->
+	<link rel="stylesheet" href="vkp//css/keyboard.css">
+	<link href="css/blurt.min.css" rel="stylesheet">
+	<script src="js/blurt.min.js"></script>
+	<script src="vkp//js/jquery.keyboard.js"></script>
+	<script src="js/top.js"></script>
+
+	<!-- keyboard extensions (optional) -->
+	<script src="vkp//js/jquery.mousewheel.js"></script>
+	<!--
+	<script src="../js/jquery.keyboard.extension-typing.js"></script>
+	<script src="../js/jquery.keyboard.extension-autocomplete.js"></script>
+	-->
+	<script src="vkp//js/jquery.keyboard.extension-navigation.js"></script>
+	<!-- initialize keyboard (required) -->
+	<style>
+
+	.tbbg {
+		background-image: url(images/444.jpg);
+		background-size: cover;
+	}
+	.btn1{/*dent around button*/
+		display: inline-block;
+		position: relative;
+		text-decoration: none;
+		color: rgba(3, 169, 244, 0.54);
+		width: 100px;
+		height: 100px;
+		border-radius: 50%;
+		text-align: center;
+		background: #f7f7f7;
+		box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.08);
+	}
+	.btn1 .fa {/*Button itself*/
+		position: absolute;
+		content: '';
+		width: 80px;
+		height: 80px;
+		line-height: 80px;
+		vertical-align: middle; 
+		left: 10px;
+		top: 9px;
+		border-radius: 50%;
+		font-size: 40px;
+		background-image: -webkit-linear-gradient(#e8e8e8 0%, #d6d6d6 100%);
+		background-image: linear-gradient(#e8e8e8 0%, #d6d6d6 100%);
+		text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.66);
+		box-shadow: inset 0 2px 0 rgba(255,255,255,0.5), 0 2px 2px rgba(0, 0, 0, 0.19);
+		border-bottom: solid 2px #b5b5b5;
+	  }
+	  
+	.btn1 .fa:active{
+		background-image: -webkit-linear-gradient(#efefef 0%, #d6d6d6 100%);
+		box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 2px 2px rgba(0, 0, 0, 0.19);
+		border-bottom: solid 2px #d8d8d8;
+	}
+	
+</style>
+   
+	</head>
+	
+	<body>
+	<table width="800px" height="480px" border="1" align="center" class="tbbg">
+	<tr><td valign="top">
+<!-- top navigation -->
+<div id="header">
+<script src="js/socket.io.js"></script>	
+	
+<div class="nav_menu" style="background-color: #393e5c;">
+				<nav>
+					<div class="col-sm-4">
+					  <img src="images/logo.png" style="width:120px;height:41px;margin-top:4px;margin-bottom:4px">
+					</div>
+					<div class="col-sm-4" style="margin-top:12px">
+					  <font color="white" size="3" ><b>SINGLE AXIS CONTROLLER</b></font>
+					</div>
+					<div class="col-sm-4">
+						<ul class="navbar-nav navbar-right">
+							
+							<!--<button class="btn btn-primary"   style="height:26%;margin-top:5px">HOME</button>-->
+							<font color="Red">MODE:</font><font color="white" size="2"><span id="screen"></span></font> </div>
+				        </ul>
+					</div>
+				</nav>
+					<script>
+					var host="192.168.202.1";
+					var socket = io.connect('http://'+host+':9090');					
+					socket.emit('readaxis',"");
+					socket.on('putaxis',function(message){
+					document.getElementById('axis').innerHTML=message;
+				    });
+					
+				    document.getElementById('screen').innerHTML=pagename;
+					var mode="";
+					var alarm_message="";
+					var ecs="";
+					var step_count="0";
+					var dir="";
+					var feed_rate="";
+					var line_no="-1";
+					var active="1";
+					var file_name="";
+					var sysdate = new Date().toISOString().slice(0,10);
+					var socket = io.connect('http://'+host+':9090');
+						socket.emit('getdeactivatedate',"");
+						socket.on('put_date',function(message3){
+							var d_date=message3;
+						
+							if(sysdate>d_date){
+								active = 0;
+							}
+						
+						});
+					//document.getElementById("lineno").innerHTML=" ";
+					document.getElementById("fname").innerHTML=" ";
+					</script>	
+						
+						
+</div>
+<div class="row" id="menu">
+
+	<center>
+	
+	<button class="btn btn-default" id="btnmanual" onclick="parent.window.location='manualv1.html?pagename=MANUAL'">MANUAL</button>
+	<button  class="btn btn-default" id="btnauto" onclick="window.location='autov1.html?pagename=AUTO'">AUTO</button>
+	<button class="btn btn-default"  id="btnprogram" onclick="window.location='programv1.html?pagename=PROGRAM'">EDIT</button>
+	<button class="btn btn-default"  id="btnsettings" onclick="parent.window.location='settingsv1.html?pagename=SETTINGS'">SETTINGS</button>
+	<button class="btn btn-primary"  onclick="reset()">RESET</button>
+	<!--<button class="btn btn-danger"  onclick="emergency()">EMERGENCY</button>-->
+	
+	</center>
+    <script>
+	
+	if(pagename=="MANUAL"){
+	
+		document.getElementById('btnmanual').className="btn btn-warning";
+	}
+	if(pagename=="PROGRAM"){
+		
+		document.getElementById('btnprogram').className="btn btn-warning";
+	}
+	if(pagename=="AUTO"){
+		
+		document.getElementById('btnauto').className="btn btn-warning";
+	}
+	if(pagename=="SETTINGS"){
+		
+		document.getElementById('btnsettings').className="btn btn-warning";
+	}
+	function reset(){
+	 socket.emit('reset',{'status':'clear'});
+	}
+	
+	function emergency(){
+	 socket.emit("emergency",{"status":'true'});
+	}
+	 </script>
+	 
+</div>
+<div class="row top_tiles" style="margin-left:1px;margin-right:1px" >
+<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" id="positionA">
+
+<!--<link rel="stylesheet" media="screen" href="https://fontlibrary.org/face/segment7" type="text/css"/>-->
+<style>
+
+@font-face {
+    font-family: 'Segment7Standard';
+        src: url('../vendors/digital_num/Segment7Standard.otf') format('opentype');
+    font-weight: normal;
+    font-style: italic;
+      }
+
+ /* The following rules are deprecated. */ 
+
+@font-face {
+    font-family: 'Segment7';
+        src: url('../vendors/digital_num/Segment7Standard.otf') format('opentype');
+    font-weight: normal;
+    font-style: italic;
+      }
+	  
+	  
+
+</style>
+
+<script src="js/socket.io.js"></script>
+					<div class="tile-stats" style="height:85px;">
+					<div>
+					<table border="0" style="width:255px;table-layout:fixed">
+					<tr>
+					<td align="center" style="font-size:12px;height:30px;">&nbsp;&nbsp;&nbsp;ACTUAL POSITION</td>
+					<td align="left" style="font-size:12px;">&nbsp;&nbsp;&nbsp;DESTINATION </td>
+					</tr>
+					<tr>
+					<td class="count" style="font-size: 29px;"><font color="#35d12f" size="5" id="clr" style="font-size:27px; margin-right:5px; font-family: arial,helvetica,sans-serif;">A&nbsp;</font><span id="x_cur" style=""></span></td>
+					<td class="count"><font size="4">&nbsp;<span id="x_dest" style="font-size: 26px;" ></span></td>
+					</tr>
+					</table>
+					</div>
+				    </div>
+	
+<script>
+var dialflag = 1;
+var socket = io.connect('http://'+host+':9090');	
+//############### Checking program execution current line###########
+
+
+
+socket.emit('get_file_cont',"123");
+socket.on('sent_file_cont',function(content){
+	var file_name=content.split(":")[1];
+	var line_num=content.split(":")[3];
+	var setmode=1;
+	var ecs=0;
+	if(content==""){
+	
+	}else{
+		
+			var values = "";
+			socket.emit('filewriting',values);
+			window.location.href='http://'+host+':8082/ucam_new/sac/autov1.html?pagename=AUTO=fn='+file_name+'=t='+line_num;
+				
+		/*brompt('Program still running, do u want to countinue...', function(val){
+			
+			//alert(line_no);
+			//execute(line_no);
+			var values = "";
+			socket.emit('filewriting',values);
+			window.location.href='http://'+host+':8082/ucam_new/sac/autov1.html?pagename=AUTO=fn='+file_name+'=t='+line_num;
+			
+		},
+		function(){
+			var values = "";
+			//alert(values);
+			socket.emit('filewriting',values);
+			
+		});*/
+	}
+	
+	
+});
+//############### ends here ###########
+var pr=0,prev=0,inc=0;
+// socket.emit("destination_position1","123.123");
+socket.on("destination_position", function(data){
+    // console.log(data.pos);
+    var pos = data.pos;
+    if(pos === null || pos === undefined){
+      return;
+    }
+    if(Object.keys(data).length == 0){
+      return;
+    }
+    pos = Math.round(pos*10000)/10000;
+    var rnd = Math.round(pos);
+    if(Math.abs(rnd-pos) <= 0.001){
+       pos = rnd;
+    }
+    pos = pos % 360;
+    //console.log(Math.round(a));
+	// if(pos<0){
+	// 	pos = 360+pos;
+	// }
+    pos = parseFloat(pos).toFixed(3);
+    ////console.log(pos);
+    //code_content
+    //$(".code_content").scrollTop()
+    ////console.log(pos);
+    var t_obj = document.getElementById('x_cur');
+    var t1_obj = document.getElementById('x1_cur');
+	if(dialflag){
+		try {
+			pr = parseInt(pos.toString());
+			inc++;
+			
+			
+			if(inc==10){
+			if(pr==0){
+				
+				prev=0;
+			}
+			if(prev-pr>350){
+				pr=0;
+				prev=0;
+			}
+				document.gauges[0].value= pr;
+				inc=0;
+			}
+			prev = pr;
+			if(dialflag==1){
+				dialflag = 0;
+			}
+		}
+		catch(err) {
+			dialflag = 0;
+		}
+
+	}
+    ////console.log(t_obj);
+    t_obj.innerHTML = pos.toString();
+    if(t1_obj){
+      t1_obj.innerHTML = pos.toString();
+    }
+    //alert(pos.toString);
+    //t_obj.textContent = " "+pos+" ";
+    /*if(obj){
+      obj.innerHTML = pos;
+    }
+    $scope.x_cur = pos;*/
+  })
+
+
+//  emit("pos_data1","123.123");
+socket.on('pos_data', function(data){
+		//console.log("Position Data",data);
+		var d = data.split(".");
+		if(d.length > 2){
+		  data = d[0]+"."+d[1];
+		}
+		var pos = data.pos;
+		pos = Math.round(pos*10000)/10000;
+		pos = parseFloat(pos).toFixed(3);
+		//console.log(pos);
+		var obj = document.getElementById('x_dest');
+		var obj1 = document.getElementById('x1_dest');
+		if(obj){
+		  obj.innerHTML = pos;
+		 
+		}
+		if(obj1){
+		  obj1.innerHTML = pos;
+		}
+	  });
+</script>	  	
+	 
+			
+
+</div>
+<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" id="positionB">
+
+<!-- <link rel="stylesheet" media="screen" href="https://fontlibrary.org/face/segment7" type="text/css"/> -->
+<style>
+
+@font-face {
+    font-family: 'Segment7Standard';
+        src: url('../vendors/digital_num/Segment7Standard.otf') format('opentype');
+    font-weight: normal;
+    font-style: italic;
+      }
+
+ /* The following rules are deprecated. */ 
+
+@font-face {
+    font-family: 'Segment7';
+        src: url('../vendors/digital_num/Segment7Standard.otf') format('opentype');
+    font-weight: normal;
+    font-style: italic;
+      }
+	
+</style>
+		       
+			<div class="tile-stats" style="height:85px;">
+							
+			<div>
+							
+			<table border="0" style="width:255px;table-layout:fixed">
+				<tr>
+				<td align="center" style="font-size:12px;height:30px;">&nbsp;&nbsp;&nbsp;ACTUAL POSITION</td>
+				<td align="left" style="font-size:12px;">&nbsp;&nbsp;&nbsp;DESTINATION </td>
+				</tr>
+				<tr>
+				<td class="count" style="font-size: 29px;"><font color="#7e7e7e" size="5" id="clr2" style="font-size:27px; margin-right:5px; font-family: arial,helvetica,sans-serif;" >B&nbsp;</font><span id="x1_cur"></span></td>
+				<td class="count"><font size="4">&nbsp;<span id="x1_dest" style="font-size: 26px;"></span></td>
+					</tr>				
+				</table>
+								
+				</div>
+				</div>
+				
+				
+				
+		
+			
+
+</div> 
+<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" id="fault">
+<script src="js/socket.io.js"></script>
+<style>
+body {font-family: Arial, Helvetica, sans-serif;}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  -webkit-animation-name: fadeIn; /* Fade in the background */
+  -webkit-animation-duration: 0.4s;
+  animation-name: fadeIn;
+  animation-duration: 0.4s
+}
+
+/* Modal Content */
+.modal-content {
+  position: fixed;
+  bottom: 0;
+  background-color: ;
+  width: 100%;
+  -webkit-animation-name: slideIn;
+  -webkit-animation-duration: 0.4s;
+  animation-name: slideIn;
+  animation-duration: 0.4s
+}
+
+/* The Close Button */
+.close {
+  color: black;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.modal-header1 {
+  padding: 2px 16px;
+  background-color: #5cb85c;
+  color: white;
+}
+
+.modal-body {padding: 2px 16px;
+ background-color: white;
+  color: black;}
+
+.modal-footer {
+  padding: 2px 16px;
+  background-color: #5cb85c;
+  color: white;
+}
+
+
+.modal1 {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  -webkit-animation-name: fadeIn; /* Fade in the background */
+  -webkit-animation-duration: 0.4s;
+  animation-name: fadeIn;
+  animation-duration: 0.4s
+}
+
+/* Modal Content */
+.modal-content {
+  position: fixed;
+  bottom: 0;
+  background-color: ;
+  width: 100%;
+  -webkit-animation-name: slideIn;
+  -webkit-animation-duration: 0.4s;
+  animation-name: slideIn;
+  animation-duration: 0.4s
+}
+
+/* The Close1 Button */
+.close1 {
+  color: black;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close1:hover,
+.close1:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.modal-header1 {
+  padding: 2px 16px;
+  background-color: #5cb85c;
+  color: white;
+}
+
+.modal-body {padding: 2px 16px;
+ background-color: white;
+  color: black;}
+
+.modal-footer {
+  padding: 2px 16px;
+  background-color: #5cb85c;
+  color: white;
+}
+
+/* Add Animation */
+@-webkit-keyframes slideIn {
+  from {bottom: -300px; opacity: 0} 
+  to {bottom: 0; opacity: 1}
+}
+
+@keyframes slideIn {
+  from {bottom: -300px; opacity: 0}
+  to {bottom: 0; opacity: 1}
+}
+
+@-webkit-keyframes fadeIn {
+  from {opacity: 0} 
+  to {opacity: 1}
+}
+
+@keyframes fadeIn {
+  from {opacity: 0} 
+  to {opacity: 1}
+}
+</style>
+<style>
+.container1 {
+	background-size: cover;
+  background: rgb(226,226,226); /* Old browsers */
+  background: -moz-linear-gradient(top,  rgba(226,226,226,1) 0%, rgba(219,219,219,1) 50%, rgba(209,209,209,1) 51%, rgba(254,254,254,1) 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(226,226,226,1)), color-stop(50%,rgba(219,219,219,1)), color-stop(51%,rgba(209,209,209,1)), color-stop(100%,rgba(254,254,254,1))); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top,  rgba(226,226,226,1) 0%,rgba(219,219,219,1) 50%,rgba(209,209,209,1) 51%,rgba(254,254,254,1) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top,  rgba(226,226,226,1) 0%,rgba(219,219,219,1) 50%,rgba(209,209,209,1) 51%,rgba(254,254,254,1) 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top,  rgba(226,226,226,1) 0%,rgba(219,219,219,1) 50%,rgba(209,209,209,1) 51%,rgba(254,254,254,1) 100%); /* IE10+ */
+  background: linear-gradient(to bottom,  rgba(226,226,226,1) 0%,rgba(219,219,219,1) 50%,rgba(209,209,209,1) 51%,rgba(254,254,254,1) 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e2e2e2', endColorstr='#fefefe',GradientType=0 ); /* IE6-9 */
+  padding: 20px;
+}
+
+.led-box {
+  height: 30px;
+  width: 25%;
+  margin: 10px 0;
+  float: left;
+}
+
+.led-box p {
+  font-size: 12px;
+  text-align: center;
+  margin: 1em;
+}
+
+
+.led-red {
+  margin: 0 auto;
+  width: 40px;
+  height: 40px;
+  background-color: #35d12f;
+  border-radius: 50%;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #304701 0 -1px 9px, #89FF00 0 2px 12px;
+}
+
+
+.led-yellow {
+  margin: 0 auto;
+  width: 24px;
+  height: 24px;
+  background-color: #FF0;
+  border-radius: 50%;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #808002 0 -1px 9px, #FF0 0 2px 12px;
+  -webkit-animation: blinkYellow 1s infinite;
+  -moz-animation: blinkYellow 1s infinite;
+  -ms-animation: blinkYellow 1s infinite;
+  -o-animation: blinkYellow 1s infinite;
+  animation: blinkYellow 1s infinite;
+}
+
+@-webkit-keyframes blinkYellow {
+    from { background-color: #FF0; }
+    50% { background-color: #AA0; box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #808002 0 -1px 9px, #FF0 0 2px 0; }
+    to { background-color: #FF0; }
+}
+@-moz-keyframes blinkYellow {
+    from { background-color: #FF0; }
+    50% { background-color: #AA0; box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #808002 0 -1px 9px, #FF0 0 2px 0; }
+    to { background-color: #FF0; }
+}
+@-ms-keyframes blinkYellow {
+    from { background-color: #FF0; }
+    50% { background-color: #AA0; box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #808002 0 -1px 9px, #FF0 0 2px 0; }
+    to { background-color: #FF0; }
+}
+@-o-keyframes blinkYellow {
+    from { background-color: #FF0; }
+    50% { background-color: #AA0; box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #808002 0 -1px 9px, #FF0 0 2px 0; }
+    to { background-color: #FF0; }
+}
+@keyframes blinkYellow {
+    from { background-color: #FF0; }
+    50% { background-color: #AA0; box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #808002 0 -1px 9px, #FF0 0 2px 0; }
+    to { background-color: #FF0; }
+}
+
+.led-green {
+  margin: 0 auto;
+  width: 40px;
+  height: 40px;
+  background-color: #35d12f;
+  border-radius: 50%;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #304701 0 -1px 9px, #89FF00 0 2px 12px;
+}
+
+.led-blue {
+  margin: 0 auto;
+  width: 24px;
+  height: 24px;
+  background-color: #24E0FF;
+  border-radius: 50%;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #006 0 -1px 9px, #3F8CFF 0 2px 14px;
+}
+
+</style>
+<div class="tile-stats" style="height:85px">
+<div>
+	<table>
+		<tr>
+			<td align="center" style="font-size:12px;height:30px">&nbsp;FAULT</td>
+			<td align="left" style="font-size:12px;">&nbsp;&nbsp;STATUS </td>
+			<td align="left" style="font-size:12px;">&nbsp;&nbsp;&nbsp;COMM </td>
+			<td align="left" style="font-size:12px;">&nbsp;&nbsp;&nbsp;HEALTH </td>
+			
+		</tr>
+		<tr>
+			<td><div class="led-red"  id="myBtn" style="margin-left:5px;"></div></td>
+			<td><div class="led-green" id="myBtn1" style="margin-left:12px;"></div> </td>
+			<td><div class="led-green" id="ethercatbtn" style="margin-left:22px;"></div> </td>
+			<td><div class="led-green" style="margin-left:14px;"></div> </td>
+		</tr>
+	</table>
+	
+</div>
+</div>
+
+<!-- Trigger/Open The Modal
+<button id="myBtn">Open Modal</button> -->
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">	
+    <div class="modal-header">
+      <span class="close">&times;</span>
+      <h2>ALARM STATUS</h2>
+    </div>
+    <div class="modal-body" id="messagedisplay" style="background-color:#05111b;color:white">
+     
+      <!--<p>Some other text...</p>
+	  <p>Some other text...</p>
+	  <p>Some other text...</p>
+	  <p>Some other text...</p>
+	  <p>Some other text...</p>
+	  <p>Some other text...</p> -->
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<div id="myModal1" class="modal1">
+
+  <!-- Modal content -->
+  <div class="modal-content">	
+    <div class="modal-header">
+      <span class="close1">&times;</span>
+      <h2>IO STATUS</h2>
+    </div>
+    <div class="col-md-12 modal-body" style="background-color:#05111b;color:white">
+      <div class="col-md-1">
+		<div style=" display: inline-block;">ECS</div>
+	  </div>
+	  <div class="col-md-1">
+     <div style="display: inline-block;">FIN</div>
+	 </div>
+	  <div class="col-md-1">
+	 <div style="display: inline-block;">SOL O/P</div>
+	 </div>
+	  <div class="col-md-1">
+     <div style="display: inline-block;">&nbsp;&nbsp;&nbsp;&nbsp;CL</div>
+	 </div>
+	  <div class="col-md-1">
+	 <div style="display: inline-block;">&nbsp;&nbsp;DCL</div>
+	 </div>
+	  <div class="col-md-1">
+	 <div style="display: inline-block;">ALM-IN</div> 
+	 </div>
+	  <div class="col-md-1">
+	 <div style="display: inline-block;">ALM-OUT</div>
+	 </div>
+	  <div class="col-md-1">
+	 <div style="display: inline-block;">&nbsp;HOME</div>
+	 </div>
+	  <div class="col-md-1">
+	 <div style="display: inline-block;">&nbsp;&nbsp;POT</div>
+	 </div>
+	  <div class="col-md-1">
+	 <div style="display: inline-block;">&nbsp;NOT</div>
+	 </div>
+	 <div class="col-md-1">
+	&nbsp;
+	 </div>
+	 <div class="col-md-1">
+	 &nbsp;
+	 </div>
+	 <div class="col-md-1">
+	 &nbsp;
+	 </div>
+	 <div class="col-md-1">
+	&nbsp;
+	 </div>
+	 <div class="col-md-1">
+	&nbsp;
+	 </div>
+	 <div class="col-md-1">
+	&nbsp;
+	 </div>
+	</div>
+     <div class="row" style="background-color:#05111b;color:white">
+      <div class="col-md-1">
+	    <img menu-toggle="left" src="images/off.png" id="img1"style="height:12px; margin-left:25px;">  </div>
+	  <div class="col-md-1">
+        <img menu-toggle="left" src="images/off.png" id="img2"style="height:12px; margin-left:30px;">	</div>
+	  <div class="col-md-1">
+		<img menu-toggle="left" src="images/off.png" id="img3" style="height:12px; margin-left:30px;">	 </div>
+	  <div class="col-md-1">
+		<img menu-toggle="left" src="images/off.png" id="img4" style="height:12px; margin-left:40px;">	 </div>
+	  <div class="col-md-1">
+		<img menu-toggle="left" src="images/off.png" id="img5" style="height:12px; margin-left:25px;">	 </div>
+	  <div class="col-md-1">
+		<img menu-toggle="left" src="images/off.png" id="img6" style="height:12px; margin-left:25px;">	 </div>
+	  <div class="col-md-1">
+		<img menu-toggle="left" src="images/off.png" id="img7" style="height:12px; margin-left:44px;">	 </div>
+	  <div class="col-md-1">
+		<img menu-toggle="left" src="images/off.png" id="img8" style="height:12px; margin-left:50px;">	 </div>
+	  <div class="col-md-1">
+		<img menu-toggle="left" src="images/off.png" id="img9" style="height:12px; margin-left:35px;">	 </div>
+	  <div class="col-md-1">
+		<img menu-toggle="left" src="images/off.png" id="img10" style="height:12px; margin-left:20px;">	 </div>
+	 <div class="col-md-1">
+	 &nbsp;
+	 </div>
+	 <div class="col-md-1">
+	 &nbsp;
+	 </div>
+	 <div class="col-md-1">
+	&nbsp;
+	 </div>
+	 <div class="col-md-1">
+	&nbsp;
+	 </div>
+	</div>
+   
+    
+
+</div>
+</div>
+
+<script>
+
+	var socket = io.connect('http://'+host+':9090');
+	// socket.emit("alarms1","haii");
+
+	socket.on("alarms", function(message){
+	var r = message.split(" ");
+	if((r[1][2] == 1)
+	 {
+	 document.getElementById("img8").src ="images/on.png";
+	 }
+	 else
+	 {
+	 document.getElementById("img8").src ="images/off.png";
+	 }
+	 
+	 if((r[1][3] == 1)
+	 {
+	 document.getElementById("img1").src ="images/on.png";
+	 }
+	 else
+	 {
+	 document.getElementById("img1").src ="images/off.png";
+	 }
+	 
+	 if((r[1][4] == 1)
+	 {
+	 document.getElementById("img4").src ="images/on.png";
+	 }
+	 else
+	 {
+	 document.getElementById("img4").src ="images/off.png";
+	 }
+	 
+	 if((r[1][5] == 1)
+	 {
+	 document.getElementById("img5").src ="images/on.png";
+	 }
+	 else
+	 {
+	 document.getElementById("img5").src ="images/off.png";
+	 }
+	 
+	 if((r[1][1] == 1)
+	 {
+	 document.getElementById("img10").src ="images/on.png";
+	 }
+	 else
+	 {
+	 document.getElementById("img10").src ="images/off.png";
+	 }
+	 
+	 if((r[1][0] == 1)
+	 {
+	 document.getElementById("img9").src ="images/on.png";
+	 }
+	 else
+	 {
+	 document.getElementById("img9").src ="images/off.png";
+	 }
+	 
+	 if((r[1][1] == 1)
+	 {
+	  document.getElementById("img6").src ="images/on.png";
+	  var ob2=document.getElementById("myBtn");
+	  ob2.style.backgroundColor= "#FF0000";
+	  document.getElementById("messagedisplay").inneHTML = "NOT Limit Exceeded - Hard Limit"
+	 }
+	 
+	 if(r[1][0] == 1)
+	 {
+	  document.getElementById("img6").src ="images/on.png";
+	  var ob2=document.getElementById("myBtn");
+	  ob2.style.backgroundColor= "#FF0000";
+	   document.getElementById("messagedisplay").inneHTML = "POT Limit Exceeded - Hard Limit"
+	 }
+	  
+	  
+	  
+		////console.log("Alarm Data", message);
+		/*var r = message.split(" ");
+		$scope.$apply(function(){
+		  $scope.home = (r[1][2] == 1) ? "images/on.png" : "images/off.png";
+		  $scope.ecs = (r[1][3] == 1) ? "images/on.png" : "images/off.png";
+		  $scope.cl = (r[1][4] == 1) ? "images/on.png" : "images/off.png";
+		  $scope.dcl = (r[1][5] == 1) ? "images/on.png" : "images/off.png";
+		  $scope.not = (r[1][1] == 1) ? "images/on.png" : "images/off.png";
+		  $scope.pot = (r[1][0] == 1) ? "images/on.png" : "images/off.png";
+
+		  if(r[1][1] == 1){
+			  $scope.almin = "./images/on.png";
+			  $scope.fault_img = "./images/red_l.png";
+			  $scope.alarm_message = "NOT Limit Exceeded - Hard Limit"
+		  }
+		  if(r[1][0] == 1){
+			  $scope.almin = "./images/on.png";
+			  $scope.fault_img = "./images/red_l.png";
+			  $scope.alarm_message = "POT Limit Exceeded - Hard Limit"
+		  }
+
+		})*/
+		/*for(var j=0;j<r[1].length;j++){
+		  var d = document.getElementById('alarm_x_'+j);
+		  if(d){
+			d.style.backgroundColor = (r[1][j] == 1) ? "red" : "green";
+		  }
+		}*/
+	  });
+ 
+  // socket.emit("alarm_error1","helloo");
+  socket.on("alarm_error", function(message){
+
+    if((message.startsWith("No Alarms"))){
+       document.getElementById("img6").src ="images/off.png";
+	   var ob2=document.getElementById("myBtn");
+       ob2.style.backgroundColor= "#35d12f";
+      // $scope.fault_img = "./images/green_l.png";
+    }
+    else{
+      document.getElementById("img6").src ="images/on.png";
+	   var ob2=document.getElementById("myBtn");
+       ob2.style.backgroundColor= "#FF0000";
+      // $scope.fault_img = "./images/red_l.png";
+    }
+
+    document.getElementById("messagedisplay").innerHTML = message;
+
+  });
+  
+ //  socket.emit("FINSIGNAL1","haihello");
+  socket.on("FINSIGNAL",function(){
+    document.getElementById("img2").src ="images/on.png";
+    //console.log("FINSIGNAL RECEIVED");
+  });
+  
+  
+  socket.on("ETH_DOWN", function(data){
+     // console.log("Ethercat Down");
+		 document.getElementById("img6").src ="images/on.png";
+		 var ob2=document.getElementById("myBtn");
+         ob2.style.backgroundColor= "#FF0000";
+		 document.getElementById("messagedisplay").innerHTML = "Communication down. Please check connection and restart";
+     // alert("Ethercat Down");
+  });
+
+  socket.on("ETH_UP", function(data){
+     // console.log("Ethercat Up");
+		 document.getElementById("img6").src ="images/off.png";
+         var ob2=document.getElementById("myBtn");
+         ob2.style.backgroundColor= "#35d12f";		
+	     document.getElementById("messagedisplay").innerHTML = "Communication link is up..";
+     // alert("Ethercat Up");
+  });
+</script>
+
+<script>
+
+ 
+ 
+// Get the modal
+var modal = document.getElementById('myModal');
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal 
+btn.onclick = function() {
+ var ob2=document.getElementById("myBtn");
+ //ob2.style.backgroundColor= "#FF0000";
+ modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+</script>
+
+
+
+<script>
+
+ 
+ 
+// Get the modal
+var modal1 = document.getElementById('myModal1');
+
+// Get the button that opens the modal
+var btn1 = document.getElementById("myBtn1");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close1")[0];
+
+// When the user clicks the button, open the modal 
+btn1.onclick = function() {
+ modal1.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal1.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal1) {
+    modal1.style.display = "none";
+  }
+}
+</script>
+</div>
+
+</div>
+<!-- top navigation -->
+ <script>
+	function restrat(){
+		brompt('Are you sure want to Reset ..!', function(){
+			window.location="";
+		});
+	}
+	function emergency(){
+		brompt('Emergency Continue ..!', function(){
+			window.location="";
+		});
+	}
+</script>
+ <div class="container body">
+      <div class="main_container">
+		<!-- top navigation 
+		<iframe src="top.html?p=Manual" height="200px" width="100%" frameBorder="0" scrolling="no" id="top" onload="settitle(this)"></iframe>
+         /top navigation -->
+		<div class="x_content11">
+		<div>
+				
+				
+				<div class="row" style="margin-left:3px;margin-right:3px;">
+					<div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
+						<div class="row">
+							
+								
+								PROGRAM:<textarea class="form-control" id="keyboard" rows="8" cols="100"></textarea><br/>
+								File name:<input type="text" class="form-control" id="filename">
+
+						</div>
+					</div>
+					<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+						<div>
+							<button type="button" class="btn btn-primary btn-lg btn3d" style="width:113px;background-color: rgba(51, 122, 183,0.4);" onclick="save_program()" ><b>SAVE</b></button>
+						</div>
+						<div>
+							<button type="button" class="btn btn-warning btn-lg btn3d" onclick="cancelprogram()" style="background-color: rgba(240, 173, 78,0.4);"><b>CANCEL</b></button>
+						</div>
+						<div>
+							<button type="button" class="btn btn-warning btn-lg btn3d" style="width:113px;background-color: rgba(240, 173, 78,0.4);" onclick="delete_program()" ><b>DELETE</b></button>
+						</div>
+						<script>
+						
+							 var socket = io.connect('http://'+host+':9090');
+							 
+							 var url = window.location.search;
+							 
+							 var fn = url.split("=")[1]; 
+							 //alert(fn);//alerts ProjectID=462 is your case
+							 var pagename = url.split("=")[2];
+							 var fn1=fn.split(",")[0];
+							 
+							 //alert(pagename);
+							 document.getElementById('filename').value = fn1;
+							socket.emit('readFile', fn1);
+							socket.on('Filecontent',function(message5){
+							
+							   document.getElementById('keyboard').value=message5;
+							
+							});
+							
+							function save_program(){
+							if(active==0)
+							{
+								blurt('Application Expired. Please Activate');
+							}
+							else
+							{
+							var pro= document.getElementById('keyboard').value;
+							var fn= document.getElementById('filename').value;
+							var jsn = '{"filename":"'+fn+'","prgm":"'+pro+'"}';
+							jsn = jsn.replace(/\n/g,"\\n");
+							jsn = jsn.replace(/\r/g,"\\r");
+							
+							 socket.emit('save_program', jsn);
+															
+							}
+					
+							socket.on('save_progra_reply', function(message1) {
+								
+								window.location="programv1.html?pagename=PROGRAM";
+								
+							
+							})
+							
+							}
+							function delete_program(){
+							
+								if(active==0)
+								{
+									blurt('Application Expired. Please Activate');
+								}
+								else
+								{
+								brompt('Are you sure to delete?', function(){
+									socket.emit('dlt_program', fn1);
+									socket.on('dltpgrm',function(message2){
+										
+								        window.location="programv1.html?pagename=PROGRAM";
+										
+									});
+							
+							
+								});
+							
+							
+							}
+							}
+							
+						</script>
+					</div>					
+				</div>	 
+			</div>
+						
+		</div>
+    </div>
+     
+
+</div>
+
+    <script>
+	function cancelprogram(){
+		brompt('Cancel..???', function(){
+			window.location="programv1.html?pagename=PROGRAM";
+		});
+	}
+	
+	</script>
+	<script>
+	
+	
+	$(function(){
+		$('#keyboard').keyboard({
+		usePreview: true, // disabled for contenteditable
+		useCombos: false,
+		autoAccept: true,
+		layout: 'custom',
+		customLayout: {
+			'normal': [
+				'1 2 3 4 5 6 7 8 9 0 {del} {b}',
+				'Q W E R T Y U I O P',
+				'A S D F G H J K L {enter}',
+				'Z X C V B N M . ;',
+				'{cancel} ( {left} {right} ) {accept}'
+			],
+		},
+		display: {
+			del: 'Delete',
+			redo: '↻',
+			undo: '↺'
+		}
+	})
+	.addTyping();
+		
+});
+		$(function(){
+			$('#filename').keyboard({
+			usePreview: true, // disabled for contenteditable
+			useCombos: false,
+			autoAccept: true,
+			layout: 'custom',
+			customLayout: {
+				'normal': [
+					'1 2 3 4 5 6 7 8 9 0 {del} {b}',
+					'Q W E R T Y U I O P',
+					'A S D F G H J K L ',
+					'Z X C V B N M . ;',
+					'{cancel} ( {left} {right} ) {accept}'
+				],
+			},
+			display: {
+				del: 'Delete',
+				redo: '↻',
+				undo: '↺'
+			}
+		})
+		.addTyping();
+			
+	});
+		
+	</script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+  
+
+    
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+	</div>
+		</td>
+</tr>
+</table>
+</body>
+</html>

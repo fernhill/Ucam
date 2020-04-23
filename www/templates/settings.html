@@ -9,9 +9,11 @@
   </ion-nav-title>
   <ion-content>
   	<!-- settings screen 1 -->
+	
 	<div style="flex-direction: row;flex: 1;height: 70%;display: flex;align-items: center;justify-content: center;">
+		
 		<div style="display: flex;height: 160px;width:500px;background-color: white;flex-direction: row;border-radius: 12px;">
-
+			
 			<div style="display: flex;flex-basis: 25%;flex-direction: column;">
 				<div style="height:105px;background-color: #31354f;flex-direction: row;align-items: center;justify-content: center;display: flex;border-top-left-radius: 4px;">
 					<img ng-src="./images/lock.png" style="height:80px;">
@@ -26,7 +28,11 @@
 			<div style="display: flex;flex-basis: 75%;flex-direction: column;">
 				<div style="height:105px;background-color: #1f2840;flex;border-top-right-radius: 4px;display: flex;flex-direction: column">
 					<div style="height:52.5px;display: flex;flex-direction: row;align-items: flex-end;justify-content: center;">
-						<span style="color:#8288a8;font-size: 16px;">Please enter your password to access</span>
+					
+						<span style="color:#8288a8;font-size: 16px;">Please enter your password to access
+						<span style="center;color:red;font-size: 16px;"><br>{{err_msg}}</span>
+						</span>
+						
 					</div>
 				</div>
 				<div style="height:55px;background-color: #1c2335;flex;border-bottom-right-radius: 4px;display: flex;flex-direction: row;align-items: center;justify-content: space-around;">
@@ -38,8 +44,12 @@
 						<img ng-src="./images/unlock.png" style="height:22px;">GET ACCESS
 					</button>
 				</div>
+				
 			</div>
+			
 		</div>
+
 	</div>
+	
   </ion-content>
 </ion-view>

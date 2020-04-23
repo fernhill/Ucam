@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>UCAM</title>
+
+	<!-- demo -->
+	<link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="../vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+	<link href="vkp/css/demo.css" rel="stylesheet">
+
+	
+	<!-- include -->
+
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+  
+	<!-- jQuery & jQuery UI + theme (required) -->
+	<link href="vkp/css/jquery-ui.min.css" rel="stylesheet">
+	<script src="vkp/js/jquery-latest.min.js"></script>
+	<script src="js/gauge.min.js"></script>
+	<script src="js/top.js"></script>
+	
+	<!--<script src="vkp/js/bootstrap.min.js"></script>-->
+	
+	<!-- keyboard widget css & script (required) -->
+	<link rel="stylesheet" href="vkp//css/keyboard.css">
+	<link href="css/blurt.min.css" rel="stylesheet">
+	<script src="js/blurt.min.js"></script>
+	<script src="vkp//js/jquery.keyboard.js"></script>
+	<script src="js/socket.io.js"></script>	
+
+	<!-- keyboard extensions (optional) -->
+	<script src="vkp//js/jquery.mousewheel.js"></script>
+	<!--
+	<script src="../js/jquery.keyboard.extension-typing.js"></script>
+	<script src="../js/jquery.keyboard.extension-autocomplete.js"></script>
+	-->
+	<script src="vkp//js/jquery.keyboard.extension-navigation.js"></script>
+	<!-- initialize keyboard (required) -->
+ 	<style>
+
+	.tbbg {
+		background-image: url(images/444.jpg);
+		background-size: cover;
+	}
+	.btn1{/*dent around button*/
+		display: inline-block;
+		position: relative;
+		text-decoration: none;
+		color: rgba(3, 169, 244, 0.54);
+		width: 100px;
+		height: 100px;
+		border-radius: 50%;
+		text-align: center;
+		background: #f7f7f7;
+		box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.08);
+	}
+	.btn1 .fa {/*Button itself*/
+		position: absolute;
+		content: '';
+		width: 80px;
+		height: 80px;
+		line-height: 80px;
+		vertical-align: middle; 
+		left: 10px;
+		top: 9px;
+		border-radius: 50%;
+		font-size: 40px;
+		background-image: -webkit-linear-gradient(#e8e8e8 0%, #d6d6d6 100%);
+		background-image: linear-gradient(#e8e8e8 0%, #d6d6d6 100%);
+		text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.66);
+		box-shadow: inset 0 2px 0 rgba(255,255,255,0.5), 0 2px 2px rgba(0, 0, 0, 0.19);
+		border-bottom: solid 2px #b5b5b5;
+	  }
+	  
+	.btn1 .fa:active{
+		background-image: -webkit-linear-gradient(#efefef 0%, #d6d6d6 100%);
+		box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 2px 2px rgba(0, 0, 0, 0.19);
+		border-bottom: solid 2px #d8d8d8;
+	}
+	
+</style>
+   
+	</head>
+	
+	<body>
+	<table width="800px" height="480px" border="1" align="center" class="tbbg">
+	<tr><td valign="top">
+<!-- top navigation -->
+<div id="header"></div>
+<div class="row top_tiles" style="margin-left:1px;margin-right:1px" >
+<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" id="positionA"></div>
+<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" id="positionB"></div> 
+<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" id="fault"></div>
+<div class="row" id="menu"></div>
+</div>  
+<!--top navigation -->
+ <script>
+	function restrat(){
+		brompt('Are you sure want to Reset ..!', function(){
+			window.location="";
+		});
+	}
+	function emergency(){
+		brompt('Emergency Continue ..!', function(){
+			window.location="";
+		});
+	}
+</script>
+
+
+ <div class="container body">
+      <div class="main_container">
+		<!-- top navigation 
+		<iframe src="top.html?p=Manual" height="200px" width="100%" frameBorder="0" scrolling="no" id="top" onload="settitle(this)"></iframe>
+         /top navigation -->
+		<div class="x_content11">
+						<div>
+				
+				<br/>
+				<div class="row" style="margin-left:3px;margin-right:3px;">
+					<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+						<button type="button" class="btn btn-primary  btn3d" style="width:140px;background-color: rgba(51, 122, 183,0.4);"onclick="drive_params()"><b>MACHINE <br/>PARAMETERS</b></button>
+						<button type="button" class="btn btn-primary  btn3d" style="height:55px;width:140px;background-color: rgba(51, 122, 183,0.4);" onclick="pitch_error()"><b>PITCH ERROR</b></button><br/>
+						<button type="button" class="btn btn-primary  btn3d" style="height:55px;background-color: rgba(51, 122, 183,0.4);" onclick="drive_offset()"><b>DRIVE OFFSET</b></button>
+						<br/><br/>
+						
+					</div>
+					<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+						
+						Select AXIS:
+						<div class="tile-stats" style="height:140px;">
+							<div class="[ form-group ]" style="margin-top:7px;">
+								&nbsp;<input type="checkbox" name="fancy-checkbox-primary" id="fancy-checkbox-primary" autocomplete="off" checked="true" />
+								<div class="[ btn-group ]">
+									<label for="fancy-checkbox-primary" class="[ btn btn-primary ]" style="height:28px" >
+										<span class="[ glyphicon glyphicon-ok ]"></span>
+										<span> </span>
+									</label>
+									<label for="fancy-checkbox-primary" class="[ btn btn-default active ]">
+									   AXIS A
+									</label>
+								</div>
+								
+							</div>
+							<div class="[ form-group ]">
+								&nbsp;<input type="checkbox" name="fancy-checkbox-success" id="fancy-checkbox-success" autocomplete="off" checked="true" />
+									<div class="[ btn-group ]">
+										<label for="fancy-checkbox-success" class="[ btn btn-primary ]" style="height:28px">
+											<span class="[ glyphicon glyphicon-ok ]"></span>
+											<span> </span>
+										</label>
+										<label for="fancy-checkbox-success" class="[ btn btn-default active ]">
+											AXIS B
+										</label>
+									</div>
+									<button class="btn btn-primary"  style="margin-left:28px; margin-top: 5px; background-color: rgba(51, 122, 183,0.4);" onclick="save_axis()"><b>SAVE</b></button>
+							</div>
+							
+						</div>
+ 
+					</div>
+					
+									
+				</div>
+					
+					
+										
+				</div>
+						
+		</div>
+    </div>
+     
+
+</div>
+	<script>
+	var url = window.location.search;
+    var pagename = url.split("=")[1];
+	function drive_params(){
+			
+		if(active==0)
+		{
+			blurt('Apllication Expired. Please Activate');
+		}
+		else
+		{
+
+			window.location='drive_paramsv1user.html?pagename=PARAMS'
+		}
+	}
+	function pitch_error(){
+			
+		if(active==0)
+		{
+			blurt('Apllication Expired. Please Activate');
+		}
+		else
+		{
+
+			window.location='pitch_errorv1user.html?pagename=PITCH'
+		}
+	}
+	function drive_offset(){
+			
+		if(active==0)
+		{
+			blurt('Apllication Expired. Please Activate');
+		}
+		else
+		{
+
+			window.location='drive_offsetv1user.html?pagename=OFFSET'
+		}
+	}
+	
+	function save_axis(){
+			
+		if(active==0)
+		{
+			blurt('Apllication Expired. Please Activate');
+		}
+		else
+		{
+
+			window.location='drive_offsetv1user.html?pagename=OFFSET'
+		}
+	}
+	</script>
+
+	
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+  
+
+    
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+	</div>
+		</td>
+</tr>
+</table>
+</body>
+</html>

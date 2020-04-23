@@ -212,6 +212,14 @@ angular.module('starter.controllers', [])
         d.style.backgroundColor = (r[1][j] == 1) ? "red" : "green";
       }
     }*/
+	
+	if(r[1][1] == 1){
+		socket.emit('pot_hard_limit',{'status':'hard_limit'});
+	}
+	
+	if(r[1][0] == 1){
+		socket.emit('not_hard_limit',{'status':'hard_limit'});
+	}
   });
   socket.on("alarm_error", function(message){
     if((message.startsWith("No Alarms"))){

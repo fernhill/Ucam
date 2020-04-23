@@ -1,0 +1,38 @@
+
+	<center>
+	
+	<button class="btn btn-default" id="btnmanual" onclick="parent.window.location='manualv1.html?pagename=MANUAL'">MANUAL</button>
+	<button  class="btn btn-default" id="btnauto" onclick="window.location='autov1.html?pagename=AUTO'">AUTO</button>
+	<button class="btn btn-default"  id="btnprogram" onclick="window.location='programv1.html?pagename=PROGRAM'">EDIT</button>
+	<button class="btn btn-default"  id="btnsettings" onclick="parent.window.location='settingsv1.html?pagename=SETTINGS'">SETTINGS</button>
+	<button class="btn btn-primary"  onclick="reset()">RESET</button>
+	<!--<button class="btn btn-danger"  onclick="emergency()">EMERGENCY</button>-->
+	
+	</center>
+    <script>
+	
+	if(pagename=="MANUAL"){
+	
+		document.getElementById('btnmanual').className="btn btn-warning";
+	}
+	if(pagename=="PROGRAM"){
+		
+		document.getElementById('btnprogram').className="btn btn-warning";
+	}
+	if(pagename=="AUTO"){
+		
+		document.getElementById('btnauto').className="btn btn-warning";
+	}
+	if(pagename=="SETTINGS"){
+		
+		document.getElementById('btnsettings').className="btn btn-warning";
+	}
+	function reset(){
+	 socket.emit('reset',{'status':'clear'});
+	}
+	
+	function emergency(){
+	 socket.emit("emergency",{"status":'true'});
+	}
+	 </script>
+	 

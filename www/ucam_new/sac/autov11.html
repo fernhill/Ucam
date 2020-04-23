@@ -1,0 +1,554 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>UCAM</title>
+
+	<!-- demo -->
+	<link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="../vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+	<link href="vkp/css/demo.css" rel="stylesheet">
+
+	
+	<!-- include -->
+
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+  
+	<!-- jQuery & jQuery UI + theme (required) -->
+	<link href="vkp/css/jquery-ui.min.css" rel="stylesheet">
+	<script src="vkp/js/jquery-latest.min.js"></script>
+	<script src="js/gauge.min.js"></script>
+	<script src="js/top.js"></script>
+	<script src="js/socket.io.js"></script>
+	
+	<!--<script src="vkp/js/bootstrap.min.js"></script>-->
+	
+		<!-- keyboard widget css & script (required) -->
+	<link rel="stylesheet" href="vkp//css/keyboard.css">
+	<link href="css/blurt.min.css" rel="stylesheet">
+	<script src="js/blurt.min.js"></script>
+	<script src="vkp//js/jquery.keyboard.js"></script>
+
+	<!-- keyboard extensions (optional) -->
+	<script src="vkp//js/jquery.mousewheel.js"></script>
+	<!--
+	<script src="../js/jquery.keyboard.extension-typing.js"></script>
+	<script src="../js/jquery.keyboard.extension-autocomplete.js"></script>
+	-->
+	<script src="vkp//js/jquery.keyboard.extension-navigation.js"></script>
+	<!-- initialize keyboard (required) -->
+	<style>
+
+	.tbbg {
+		background-image: url(images/444.jpg);
+		background-size: cover;
+	}
+	.btn1{/*dent around button*/
+		display: inline-block;
+		position: relative;
+		text-decoration: none;
+		color: rgba(3, 169, 244, 0.54);
+		width: 100px;
+		height: 100px;
+		border-radius: 50%;
+		text-align: center;
+		background: #f7f7f7;
+		box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.08);
+	}
+	.btn1 .fa {/*Button itself*/
+		position: absolute;
+		content: '';
+		width: 80px;
+		height: 80px;
+		line-height: 80px;
+		vertical-align: middle; 
+		left: 10px;
+		top: 9px;
+		border-radius: 50%;
+		font-size: 40px;
+		background-image: -webkit-linear-gradient(#e8e8e8 0%, #d6d6d6 100%);
+		background-image: linear-gradient(#e8e8e8 0%, #d6d6d6 100%);
+		text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.66);
+		box-shadow: inset 0 2px 0 rgba(255,255,255,0.5), 0 2px 2px rgba(0, 0, 0, 0.19);
+		border-bottom: solid 2px #b5b5b5;
+	  }
+	  
+	.btn1 .fa:active{
+		background-image: -webkit-linear-gradient(#efefef 0%, #d6d6d6 100%);
+		box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 2px 2px rgba(0, 0, 0, 0.19);
+		border-bottom: solid 2px #d8d8d8;
+	}
+	
+</style>
+<style>
+:focus{
+  outline:none;
+}
+.radio{
+  -webkit-appearance:button;
+  -moz-appearance:button;
+  appearance:button;
+  border:4px solid #ccc;
+  border-top-color:#bbb;
+  border-left-color:#bbb;
+  background:#fff;
+  width:300px;
+  height:30px;
+  border-radius:50%;
+}
+.radio:checked{
+  border:10px solid #4099ff;
+}
+
+</style>
+   
+	</head>
+	
+	<body>
+	<table width="800px" height="480px" border="1" align="center" class="tbbg">
+	<tr><td valign="top">
+<!-- top navigation -->
+<div id="header"></div>
+<div class="row top_tiles" style="margin-left:1px;margin-right:1px" >
+<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" id="positionA"></div>
+<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" id="positionB"></div> 
+<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" id="fault"></div>
+<div class="row" id="menu"></div>
+</div>
+
+
+ <script>
+	function restrat(){
+		brompt('Are you sure want to Reset ..!', function(){
+			window.location="";
+		});
+	}
+	function emergency(){
+		brompt('Emergency Continue ..!', function(){
+			window.location="";
+		});
+	}
+	
+	/*var socket = io.connect('http://'+host+':9090');
+	
+	socket.emit('getFiles', "");
+	
+	socket.on('Files', function (message) {
+        // The username of the person who clicked is retrieved from the session variables
+       
+	   $("#prmdiv").html(message);
+	   */
+		
+    });
+</script>
+
+
+
+
+
+ <div class="container body">
+      <div class="main_container">
+		<!-- top navigation 
+		<iframe src="top.html?p=Manual" height="200px" width="100%" frameBorder="0" scrolling="no" id="top" onload="settitle(this)"></iframe>
+         /top navigation -->
+		<div class="x_content11">
+			<div>
+				
+				
+				<div class="row" style="margin-left:3px;margin-right:3px;">
+					<div class="col-md-7">
+					<div class="row"> 
+					&nbsp;PROGRAM:<span style="color: white" id="fname">{{file_name}}</span>
+			  <span style="color: white; margin-left:250px">Line No: <span style="color:white" id="lineno"></span>
+              
+          </div><!-- top navigation <textarea class="form-control" id="prms" rows="10" cols="100" style="overflow-y: scroll; background-color: rgba(0,0,0,0.4);color:white;" readonly></textarea><br/> /top navigation -->
+					<div class="tile-stats" style="height:240px;">
+					<div  id="divid" class="code_content list" style="flex-basis: 100%; font-size:3px; width:440px; height: 100%; overflow-y: scroll; background-color:#423e3e;">
+						
+					</div>
+					</div>
+					
+					</div>
+					<div class="col-md-5">
+					<br/>
+						<div>	
+							<button class="btn btn-primary"  style="width:142px;height:55px;background-color: rgba(51, 122, 183,0.4);" onclick="select_prog()"><b>SELECT PROG</b></button>
+							<span id="clr1"><button class="btn btn-primary"  style="height:55px;background-color: rgba(51, 122, 183,0.4);" id="next_button" onclick="execNextLine()" > <b>NEXT BLOCK</b></button></span><br/><br/>
+							<table width="100%" id="rd">
+							<tr>
+							<td><input type="radio" class="radio" name="test"  id="test" value="0" onclick="setPgmMode('s')" style="width:30px" ></td>
+							<td><b>&nbsp;SINGLE BLOCK</b></td>
+							<td><input type="radio" class="radio" name="test" id="test1" value="1" onclick="setPgmMode('c')" style="width:30px" ></td>
+							<td><b>&nbsp;CONTINUOUS</b></td>
+							</tr>
+							</table>
+							<br/>
+							<div id="sl_ex_st">
+							<button class="btn btn-primary" id="exec" style="width:142px;height:55px;background-color: rgba(51, 122, 183,0.4);" onclick="execute(0)"><b>EXECUTE</b></button>
+							<button class="btn btn-warning" style="width:126px;height:55px;background-color: rgba(240, 173, 78,0.4);" onclick="stop_program()"><b>STOP</b></button>
+							</div>
+							
+						</div>
+					</div>                            
+										
+				</div>	 
+			</div>
+						
+		</div>
+    </div>
+     
+
+</div>
+
+
+
+
+  <script>
+  
+	document.getElementById("rd").style.visibility = 'hidden';
+	document.getElementById("next_button").style.visibility = 'hidden';
+	document.getElementById("sl_ex_st").style.visibility = 'hidden';
+	
+	//document.getElementById("cont_ex_stop").style.visibility = 'hidden';
+    var socket = io.connect('http://'+host+':9090');			 
+	var url = window.location.search;
+    var ht="";					 
+	var pagename = url.split("=")[1]; 
+	var fn = url.split("=")[3];
+	var linenum=url.split("=")[5];
+	//alert("666666666666666666666666666"+linenum);
+	//var pagename=pname.split(",")[0];
+	//var type=pname.split(",")[2];
+	
+	
+	
+	//var file=url.split(",")[1];
+	if(linenum !='' && linenum !== undefined){
+		//alert("aaaaaaaaaaaaaa");
+		//abc(66);
+		
+		var obj2 = document.getElementById("lineno");
+		obj2.innerHTML = linenum;
+		
+		//var obj = document.getElementById("num"+linenum);
+		//obj.style.background = "rgba(45, 204, 112, 0.52)";
+		document.getElementById("rd").style.visibility = 'visible';
+		document.getElementById("test1").click()
+		document.getElementById("sl_ex_st").style.visibility = 'visible';
+		document.getElementById("clr1").innerHTML='<button class="btn btn-primary"  style="height:55px;width:142px;background-color: rgba(51, 122, 183,0.4);" id="clear_button" onclick="clear1()"> <b>CLEAR</b></button>';
+		//execute(linenum);
+		//socket.emit("execute", {file_name:file_name, mode:1, ecs:0, lineno: linenum});
+		
+		//document.getElementById('exec').style.background = "rgba(45, 204, 112, 0.52)";
+	}
+	
+	
+	
+	
+	
+	
+	socket.emit('readFile1', fn);
+	socket.on('Filecontent1',function(message5){
+	
+	var lines = message5.split('\n');
+    for(var line = 0; line < lines.length; line++){
+      ht = ht + "<div id='num"+(line+1)+"' >"+lines[line]+"</div>";
+	  
+    }       
+	//alert(ht);
+	
+	document.getElementById("fname").innerHTML= fn;
+	document.getElementById('divid').innerHTML = ht;		
+	//document.getElementById('prms').value=message5;
+		//ht = "<div>"+message5+"</div>";
+	 
+	document.getElementById("rd").style.visibility = 'visible';						
+	});
+	
+	
+	 
+	
+	function stop_program(){
+			
+		if(active==0)
+		{
+			blurt('Application Expired. Please Activate');
+		}
+		else
+		{ 
+			var socket = io.connect('http://'+host+':9090');
+			/*socket.emit("line",{"line": "16"});
+			socket.on("line_number", function(data){
+				//console.log("Line Number details --> ");
+				//console.log(data);
+				var ln = parseInt(data.line);
+				$('.code_content').animate({scrollTop: 10*ln}, 20);
+				var obj = document.getElementById("num"+ln);
+				var prev_line = -1;
+				if(prev_line >=0){
+				  //console.log("Obtained prev_line "+prev_line);
+				  var tmp_obj = document.getElementById("num"+prev_line);
+				  tmp_obj.style.background = "#1f233a";
+				}
+				if(obj){
+				  obj.style.background = "rgba(45, 204, 112, 0.52)";
+				}
+				var obj2 = document.getElementById("lineno");
+				obj2.innerHTML = ln;
+				lineno=ln;
+				prev_line = ln;
+			});*/
+			//brompt('Are you sure want to stop..!', function(){
+				//window.location="";
+				socket.emit("stop_execution", {"status":"stop"});
+				//socket.emit('status', 'show');
+			//});
+			
+			document.getElementById('exec').style.background = "rgba(51, 122, 183, 0.4)";
+		}
+	}
+	function setPgmMode(mode){
+			
+		if(active==0)
+		{
+			blurt('Application Expired. Please Activate');
+		}
+		else
+		{
+			
+			//console.log("Inside Set P");
+			if(mode == "s"){
+			//document.getElementById("next_button").style.visibility = 'visible';
+			  document.getElementById("sl_ex_st").style.visibility = 'visible';
+			  document.getElementById("clr1").innerHTML='<button class="btn btn-primary"  style="height:55px;width:142px;background-color: rgba(51, 122, 183,0.4);" id="next_button" onclick="execNextLine()" > <b>NEXT BLOCK</b></button>';
+			  //document.getElementById("cont_ex_stop").style.visibility = 'hidden';
+			  ecs=1;
+			  //console.log("Setting ecs to high: "+ecs);
+			  //console.log("Entered Single block");
+			 mode="0";
+			  s_mode_button = "mode_button_active";
+			 c_mode_button = "mode_button";
+			  socket.emit("set_program_mode", {mode:"single"});
+			}
+			else{
+			  ecs = 0;
+			  //console.log("Setting ecs to low: "+ecs);
+			  document.getElementById("next_button").style.visibility = 'hidden';
+			  document.getElementById("sl_ex_st").style.visibility = 'visible';
+			 document.getElementById("clr1").innerHTML='<button class="btn btn-primary"  style="height:55px;width:142px;background-color: rgba(51, 122, 183,0.4);" id="clear_button" onclick="clear1()" > <b>CLEAR</b></button>';
+			  //document.getElementById("cont_ex_stop").style.visibility = 'visible';
+			  //console.log("Entered Continuous block");
+			 mode="1";
+			  s_mode_button = "mode_button";
+			  c_mode_button = "mode_button_active";
+			  socket.emit("set_program_mode", {mode:"continuous"})
+			}
+			/*brompt('Are you sure want to stop..!', function(){
+				window.location="";
+			});*/
+			/*
+			 document.getElementById("next_button").style.visibility = 'visible';
+			 socket.emit('ecs',"");
+			 socket.on('ecsprint',function(message8){
+			 var jsobj = JSON.parse(message8);
+			 jsobj.X.ecs = 0;
+			 var message3 = JSON.stringify(jsobj);
+			 
+			 });
+			 socket.emit('writeecs',"");
+			 socket.on('finishsaved',function(message3){
+			 }); */
+		}
+	}
+		function execNextLine(){
+			
+		if(active==0)
+		{
+			blurt('Application Expired. Please Activate');
+		}
+		else
+		{   
+			var currentline=document.getElementById('lineno').innerHTML;
+			var lnum=currentline+1;
+		    var socket = io.connect('http://'+host+':9090');
+		    currentline++;
+            socket.emit("line",{"line": currentline });
+			socket.on("line_number", function(data){
+			//console.log("Line Number details --> ");
+			//console.log(data);
+			var ln = parseInt(data.line);
+		    $('.code_content').animate({scrollTop: 13*ln}, 20);
+			var obj = document.getElementById("num"+ln);
+			var prev_line = -1;
+			
+			  //console.log("Obtained prev_line "+prev_line);
+			  var tmp_obj = document.getElementById("num"+lnum);
+			  tmp_obj.style.background = "transparent";
+			
+			if(obj){
+			  obj.style.background = "rgba(45, 204, 112, 0.52)";
+			}
+			var obj2 = document.getElementById("lineno");
+			obj2.innerHTML = ln;
+			prev_line = ln;
+		    });
+		    
+		    socket.emit("exec_next_line", {"status":"1"});
+			/*brompt('Are you sure want to stop..!', function(){
+				window.location="";
+			});*/
+		}
+	}
+		function select_prog(){
+			
+		if(active==0)
+		{
+			blurt('Application Expired. Please Activate');
+		}
+		else
+		{
+
+			window.location="programv1run.html?pagename=PROGRAM";
+		}
+	}
+		function execute(pline_no){
+		
+
+			
+			document.getElementById('exec').style.background = "rgba(45, 204, 112, 0.52)";
+			/*brompt('Are you sure want to stop..!', function(){
+				window.location="";
+			});*/
+			
+			var socket = io.connect('http://'+host+':9090');
+			
+			//**********************line number***************
+			var line_no = 0;
+			var prev_line = -1;
+			socket.on("line_number", function(data){
+			var ln = parseInt(data.line)+1;
+			
+			
+			$('.code_content').animate({scrollTop: 10*ln}, 20);
+			var obj = document.getElementById("num"+(ln));
+			
+			if(prev_line >=0){
+			  //console.log("Obtained prev_line "+prev_line);
+			  
+			  var tmp_obj = document.getElementById("num"+(prev_line));
+			  
+			  tmp_obj.style.background = "transparent";
+			}
+			if(obj){
+			  obj.style.background = "rgba(45, 204, 112, 0.52)";
+			}
+			var obj2 = document.getElementById("lineno");
+			obj2.innerHTML = ln;
+			line_no=ln;
+			prev_line = ln;
+			var values = 'name:'+fn+':lineno:'+ln;
+			//alert(values);
+			socket.emit('filewriting',values);
+			
+		});
+			
+			//alert("eeeeeeeeeee");
+			var file_name=fn;
+
+			if (document.getElementById("test").checked)
+			  setmode = document.getElementById("test").value;
+
+			else if(document.getElementById("test1").checked)
+			  setmode = document.getElementById("test1").value;
+			 var obj2 = document.getElementById("lineno");
+			line_no = obj2.innerHTML.trim();
+			;
+				if(line_no==""){
+					//alert("ddddd");
+					line_no = pline_no;
+				}
+					
+					//alert(line_no);
+					socket.emit("execute", {file_name:file_name, mode:1, ecs:0, lineno: line_no});
+					lineno = 0;
+				
+			
+		
+	}
+		
+		function continuous(){
+			
+		if(active==0)
+		{
+			blurt('Application Expired. Please Activate');
+		}
+		else
+		{
+            
+			/*brompt('Are you sure want to stop..!', function(){
+				window.location="";
+			});*/
+		}
+	}
+	function clear1(){
+		var values = "";
+		socket.emit('filewriting',values);
+		document.getElementById("lineno").innerHTML=" ";
+	
+	}
+	
+	
+	
+	
+	</script>
+	<script>
+	/*$(function(){
+		$('#prms').keyboard({
+		usePreview: true, // disabled for contenteditable
+		useCombos: false,
+		autoAccept: true,
+		layout: 'custom',
+		customLayout: {
+			'normal': [
+				'1 2 3 4 5 6 7 8 9 0 {del} {b}',
+				'Q W E R T Y U I O P',
+				'A S D F G H J K L {enter}',
+				'Z X C V B N M .',
+				'{cancel} {left} {right} {accept}'
+			],
+		},
+		display: {
+			del: 'Delete',
+			redo: '↻',
+			undo: '↺'
+		}
+	})
+	.addTyping();
+		
+});*/
+
+
+	}
+	
+    </script>
+	
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+  
+
+    
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+	</div>
+		</td>
+</tr>
+</table>
+</body>
+</html>

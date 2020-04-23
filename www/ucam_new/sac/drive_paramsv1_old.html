@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>UCAM</title>
+
+	<!-- demo -->
+	<link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="../vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+	<link href="vkp/css/demo.css" rel="stylesheet">
+
+	
+	<!-- include -->
+
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+  
+	<!-- jQuery & jQuery UI + theme (required) -->
+	<link href="vkp/css/jquery-ui.min.css" rel="stylesheet">
+	<script src="vkp/js/jquery-latest.min.js"></script>
+	<script src="js/gauge.min.js"></script>
+	
+	<!--<script src="vkp/js/bootstrap.min.js"></script>-->
+	
+		<!-- keyboard widget css & script (required) -->
+	<link rel="stylesheet" href="vkp//css/keyboard.css">
+	<link href="css/blurt.min.css" rel="stylesheet">
+	<script src="js/blurt.min.js"></script>
+	<script src="vkp//js/jquery.keyboard.js"></script>
+	<script src="js/top.js"></script>
+	<script src="js/socket.io.js"></script>
+
+	<!-- keyboard extensions (optional) -->
+	<script src="vkp//js/jquery.mousewheel.js"></script>
+	<!--
+	<script src="../js/jquery.keyboard.extension-typing.js"></script>
+	<script src="../js/jquery.keyboard.extension-autocomplete.js"></script>
+	-->
+	<script src="vkp//js/jquery.keyboard.extension-navigation.js"></script>
+	<!-- initialize keyboard (required) -->
+	<style>
+
+	.tbbg {
+		background-image: url(images/444.jpg);
+		background-size: cover;
+	}
+	.btn1{/*dent around button*/
+		display: inline-block;
+		position: relative;
+		text-decoration: none;
+		color: rgba(3, 169, 244, 0.54);
+		width: 100px;
+		height: 100px;
+		border-radius: 50%;
+		text-align: center;
+		background: #f7f7f7;
+		box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.08);
+	}
+	.btn1 .fa {/*Button itself*/
+		position: absolute;
+		content: '';
+		width: 80px;
+		height: 80px;
+		line-height: 80px;
+		vertical-align: middle; 
+		left: 10px;
+		top: 9px;
+		border-radius: 50%;
+		font-size: 40px;
+		background-image: -webkit-linear-gradient(#e8e8e8 0%, #d6d6d6 100%);
+		background-image: linear-gradient(#e8e8e8 0%, #d6d6d6 100%);
+		text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.66);
+		box-shadow: inset 0 2px 0 rgba(255,255,255,0.5), 0 2px 2px rgba(0, 0, 0, 0.19);
+		border-bottom: solid 2px #b5b5b5;
+	  }
+	  
+	.btn1 .fa:active{
+		background-image: -webkit-linear-gradient(#efefef 0%, #d6d6d6 100%);
+		box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 2px 2px rgba(0, 0, 0, 0.19);
+		border-bottom: solid 2px #d8d8d8;
+	}
+	
+</style>
+   
+	</head>
+	
+	<body>
+	<table width="800px" height="480px" border="1" align="center" class="tbbg">
+	<tr><td valign="top">
+<!-- top navigation -->
+<div id="header"></div>
+<div class="row top_tiles" style="margin-left:1px;margin-right:1px" >
+<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" id="positionA"></div>
+<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" id="positionB"></div> 
+<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" id="fault"></div>
+<div class="row" id="menu"></div>
+</div>
+<!--top navigation -->
+
+		<div id="header"></div>
+		<div class="row top_tiles" style="margin-left:1px;margin-right:1px" >
+		<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" id="positionA"></div>
+		<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" id="positionB"></div> 
+		<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" id="fault"></div>
+		<div class="row" id="menu"></div>
+        </div>
+
+ <script>
+	function restrat(){
+		brompt('Are you sure want to Reset ..!', function(){
+			window.location="";
+		});
+	}
+	function emergency(){
+		brompt('Emergency Continue ..!', function(){
+			window.location="";
+		});
+	}
+</script>
+
+
+
+ <div class="container body">
+      <div class="main_container">
+		<!-- top navigation 
+		<iframe src="top.html?p=Manual" height="200px" width="100%" frameBorder="0" scrolling="no" id="top" onload="settitle(this)"></iframe>
+         /top navigation -->
+		<div class="x_content11">
+		<br/>
+							<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 Delay" style="margin-top: -20px;">
+					CL/DL DELAY (in ms)
+					<input type="text" class="form-control" id="key0">
+					<br/>
+						<div>
+						<button class="btn btn-default"  style="height:55px;width:111px;background-color: rgba(255, 255, 255,0.4);" onclick=""><font color="white"><b>ECS</b></font></button>
+												
+						</div>
+						<br/>
+						<div>
+							<button class="btn btn-default"  style="height:55px;width:111px;background-color: rgba(255, 255, 255,0.4);" onclick=""><font color="white"><b>MAIN DIR</b></button>
+											
+						</div>
+								
+				</div>
+					
+				<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+	
+					<div>
+						<button class="btn btn-default"  style="height:55px;width:111px;margin-top:12px;background-color: rgba(255, 255, 255,0.4);" onclick=""><font size="6" color="white"><b>-</b></font></button>
+					</div>
+					<br/>
+					<div>
+						<button class="btn btn-default"  style="height:55px;width:111px;background-color: rgba(255, 255, 255,0.4);" onclick=""><font color="white"><b>CL/DL</b></font></button>
+						
+					</div>
+					<br/>
+					<div>
+						<button class="btn btn-default"  style="height:55px;width:111px;background-color: rgba(255, 255, 255,0.4);" onclick=""><font color="white"><b>FIN SIGNAL</b></font></button>
+					</div>
+													
+				</div>
+				<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="margin-top: -10px;">
+					<center>JOG FEED</center><input type="text" class="form-control" id="passwd1" style="height:40px;margin-top: -5px;"><br/>
+					<center>POT</center><input type="text" class="form-control" id="passwd2" style="height:40px;margin-top: 1px;" ><br/>
+					<center>NOT</center><input type="text" class="form-control" id="passwd3" style="height:40px;margin-top: 1px;">
+				</div>
+				<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="margin-top: -10px;">
+					<center>HOME OFFSET</center><input type="text" class="form-control" id="passwd4" style="height:40px;margin-top: -5px;"><br/>
+					<center>FINISH TIMING(in ms)</center><input type="text" class="form-control" id="passwd5" style="height:40px;margin-top: 1px;" ><br/>
+					<center>BACKLASH</center><input type="text" class="form-control" id="passwd6" style="height:40px;margin-top: 1px;">
+							
+				</div>
+				<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2" style="margin-bottom: 10px; margin-top: -10px;">
+					<div>
+						<button class="btn btn-primary" onclick="save_pitcherror1()"  style="height:55px;width:111px;margin-top:10px;background-color: rgba(51, 122, 183,0.4);"><b>SAVE</b></button>
+					</div>
+					<br/>
+					<div>
+						<button class="btn btn-primary" onclick="save_pitcherror1()"  style="height:55px;width:111px;margin-top:10px;background-color: rgba(51, 122, 183,0.4);"><b>RESET</b></button>
+					</div>
+					<br/>
+					<div>
+						<button class="btn btn-warning"  style="height:55px;width:111px;background-color: rgba(240, 173, 78,0.4);" onclick="parent.window.location='setting_menuv1.html?pagename=ADMENU'"><b>EXIT</b></button>
+					</div>
+					
+					
+					<script>
+					var url = window.location.search;
+					var pagename = url.split("=")[1];
+					var socket = io.connect('http://'+host+':9090');
+					socket.emit('getparams',"");
+					socket.on('params',function(message7){
+					var jsobj = JSON.parse(message7);
+					document.getElementById('key0').value=jsobj.X.cl_dl;
+					document.getElementById('passwd1').value=jsobj.X.jog_feed;
+						 document.getElementById('passwd2').value=jsobj.X.pot;
+						 document.getElementById('passwd3').value=jsobj.X.not;
+						 document.getElementById('passwd4').value=jsobj.X.homing_offset;
+						 document.getElementById('passwd5').value=jsobj.X.timing;
+						 document.getElementById('passwd6').value=jsobj.X.back_lash;
+                   
+					});
+					
+					
+					function save_pitcherror1(){
+					        socket.emit('getparams1',"");
+							socket.on('params1',function(message7){
+							var jsobj = JSON.parse(message7);
+							jsobj.X.cl_dl= document.getElementById('key0').value;
+							jsobj.X.jog_feed = document.getElementById('passwd1').value;
+							jsobj.X.pot = document.getElementById('passwd2').value;
+							jsobj.X.not = document.getElementById('passwd3').value;
+							jsobj.X.homing_offset = document.getElementById('passwd4').value;
+							jsobj.X.timing = document.getElementById('passwd5').value;
+							jsobj.X.back_lash = document.getElementById('passwd6').value;
+							//var message = '{"CLDLDELAY":"'+value1+'","JOGFEED":"'+value2+'","POT":"'+value3+'","NOT":"'+value4+'","HOMEOFFSET":"'+value5+'","FINISHTIMING":"'+value6+'","BACKLASH":"'+value7+'"}';
+							var message3 = JSON.stringify(jsobj);
+							socket.emit('putparams',message3);
+							socket.on('paramssaved',function(message3){
+							alert(message3);
+	                        });
+		 					});		
+							}
+						</script>			
+							
+				</div>
+						
+		</div>
+    </div>
+     
+
+</div>
+<script>
+	
+		$(function(){
+			$('#passwd1').keyboard({
+				usePreview: true, // disabled for contenteditable
+				useCombos: false,
+				autoAccept: true,
+				layout: 'custom',
+				customLayout: {
+					'normal': [
+						' 1 2 3 4 5 6 7 8 9 0  {del} {b}',
+						' {cancel} {space} {left} {right} . {accept}'
+					],
+					
+				},
+				display: {
+					del: 'Delete',
+					redo: '↻',
+					undo: '↺'
+				}
+			})
+			.addTyping();
+			
+		});
+		$(function(){
+			$('#passwd2').keyboard({
+				usePreview: true, // disabled for contenteditable
+				useCombos: false,
+				autoAccept: true,
+				layout: 'custom',
+				customLayout: {
+					'normal': [
+						' 1 2 3 4 5 6 7 8 9 0  {del} {b}',
+						' {cancel} {space} {left} {right} . {accept}'
+					],
+					
+				},
+				display: {
+					del: 'Delete',
+					redo: '↻',
+					undo: '↺'
+				}
+			})
+			.addTyping();
+			
+		});
+		$(function(){
+			$('#passwd3').keyboard({
+				usePreview: true, // disabled for contenteditable
+				useCombos: false,
+				autoAccept: true,
+				layout: 'custom',
+				customLayout: {
+					'normal': [
+						' 1 2 3 4 5 6 7 8 9 0  {del} {b}',
+						' {cancel} {space} {left} {right} . {accept}'
+					],
+					
+				},
+				display: {
+					del: 'Delete',
+					redo: '↻',
+					undo: '↺'
+				}
+			})
+			.addTyping();
+			
+		});
+		$(function(){
+			$('#passwd4').keyboard({
+				usePreview: true, // disabled for contenteditable
+				useCombos: false,
+				autoAccept: true,
+				layout: 'custom',
+				customLayout: {
+					'normal': [
+						' 1 2 3 4 5 6 7 8 9 0  {del} {b}',
+						' {cancel} {space} {left} {right} . {accept}'
+					],
+					
+				},
+				display: {
+					del: 'Delete',
+					redo: '↻',
+					undo: '↺'
+				}
+			})
+			.addTyping();
+			
+		});
+		$(function(){
+			$('#passwd5').keyboard({
+				usePreview: true, // disabled for contenteditable
+				useCombos: false,
+				autoAccept: true,
+				layout: 'custom',
+				customLayout: {
+					'normal': [
+						' 1 2 3 4 5 6 7 8 9 0  {del} {b}',
+						' {cancel} {space} {left} {right} . {accept}'
+					],
+					
+				},
+				display: {
+					del: 'Delete',
+					redo: '↻',
+					undo: '↺'
+				}
+			})
+			.addTyping();
+			
+		});
+		$(function(){
+			$('#passwd6').keyboard({
+				usePreview: true, // disabled for contenteditable
+				useCombos: false,
+				autoAccept: true,
+				layout: 'custom',
+				customLayout: {
+					'normal': [
+						' 1 2 3 4 5 6 7 8 9 0  {del} {b}',
+						' {cancel} {space} {left} {right} . {accept}'
+					],
+					
+				},
+				display: {
+					del: 'Delete',
+					redo: '↻',
+					undo: '↺'
+				}
+			})
+			.addTyping();
+			
+		});
+				$(function(){
+			$('#key0').keyboard({
+				usePreview: true, // disabled for contenteditable
+				useCombos: false,
+				autoAccept: true,
+				layout: 'custom',
+				customLayout: {
+					'normal': [
+						' 1 2 3 4 5 6 7 8 9 0  {del} {b}',
+						' {cancel} {space} {left} {right} . {accept}'
+					],
+					
+				},
+				display: {
+					del: 'Delete',
+					redo: '↻',
+					undo: '↺'
+				}
+			})
+			.addTyping();
+			
+		});
+		
+	</script>
+	
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+  
+
+    
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+	</div>
+		</td>
+</tr>
+</table>
+</body>
+</html>
