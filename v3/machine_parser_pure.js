@@ -270,14 +270,8 @@ var obj = {
                 xdeg=xval/pval;
                 xcommand= "A"+xdeg;
                 console.log("Will update the Commands by adding "+Math.abs(pval) +"values of " +xcommand);
-		var j = 0;
-		parsed_lines2[j]="G167S";
-              for(j=1;j <=Math.abs(pval);j++){
-                parsed_lines2[j]=xcommand;
-		
-		}
-		parsed_lines2[j]="P0";
-
+              for(var j=0;j <Math.abs(pval);j++){
+                parsed_lines2[j]=xcommand;}
                 this.parsed_lines.splice.apply(this.parsed_lines, [i,3].concat(parsed_lines2));
                 n=this.parsed_lines.length;
                 }
@@ -602,7 +596,7 @@ var obj = {
     this.potlimit = parseFloat(json_data.X.pot);
     this.notlimit = parseFloat(json_data.X.not);
     this.feedrate = parseFloat(json_data.X.jog_feed);
-    this.threshold = 1.5;//parseInt(this.feedrate*1.7);
+    this.threshold = parseInt(this.feedrate*1.7);
     this.workoffset = 0;
 	this.fin_signal = parseFloat(json_data.X.fin_signal);
 	this.g54 = parseFloat(json_data.X.g54);
