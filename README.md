@@ -15,4 +15,7 @@ version 1.1.1:
 version 1.1.2:
 #POT NOT step size function
 #POT NOT in auto mode
-#Reference intimation 
+#Reference intimation
+
+version 1.1.3:
+#Alarm pop up function included 
