@@ -1,0 +1,28 @@
+Features:
+
+1-jog run- working normal
+2-Speed(feed rate)- variable
+3-start jog- normal
+4-stop jog- normal
+5-zero reference- normal
+6-Reset- normal
+7-CW direction- working
+8-CCW direction- working
+9-G16 - working(program)
+10-G17 - working(program)
+11-G10 - working(program)
+12-Wrong password- working
+13-Alarm Pop up- 
+	POT limit exceeded- working
+	NOT limit exceeded- working
+	Hard POT limit exceeded- working
+	Hard NOT limit exceeded- working
+	Ethercat communication down - working
+14-Hard POT limit - working
+15-Hard NOT limit - working
+16-Soft POT limit - working
+17-Soft NOT limit - working
+18-Zero reference (Shortest path)-	working
+19-Reference Intimation - Startjog, Stopjog, reset, zero reference, execute, stop-execution.
+20-Auto stopjog (gui button change after motor stops at any over travel alarm) - working.
+	

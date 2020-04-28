@@ -19,3 +19,6 @@ version 1.1.2:
 
 version 1.1.3:
 #Alarm pop up function included 
+
+version 1.1.4:
+#Auto stopjog (gui button change after motor stops at any over travel alarm)
